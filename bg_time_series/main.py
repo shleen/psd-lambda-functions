@@ -10,7 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from tempfile import mkdtemp
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -96,89 +96,94 @@ def get_time_series(driver, wait):
   driver.find_element(By.XPATH, '//a[text()="SSOC Occupations"]').click()
 
   for ssoc in SSOCs:
-    ssoc_input = driver.find_element(By.XPATH,
-                                     '//input[@id="JTAndOccsOnetCode"]')
-    ssoc_input.click()  # give focus
+    while True:
+      try:
+        ssoc_input = driver.find_element(By.XPATH,
+                                        '//input[@id="JTAndOccsOnetCode"]')
+        ssoc_input.click()  # give focus
 
-    ssoc_input.send_keys(ssoc)
+        ssoc_input.send_keys(ssoc)
 
-    time.sleep(1)
-    driver.find_element(By.XPATH, f'//a[contains(text(), "{ssoc}")]').click()
-    time.sleep(1)
+        time.sleep(1)
+        driver.find_element(By.XPATH, f'//a[contains(text(), "{ssoc}")]').click()
+        time.sleep(1)
 
-    # add to list
-    add_button = driver.find_element(By.XPATH,
-                                     '//button[@id="btn-add-soccode"]')
-    add_button.click()
+        # add to list
+        add_button = driver.find_element(By.XPATH,
+                                        '//button[@id="btn-add-soccode"]')
+        add_button.click()
 
-    try:
-      driver.find_element(By.XPATH, '//button[@id="showReport"]').click()
+        try:
+          driver.find_element(By.XPATH, '//button[@id="showReport"]').click()
 
-      time.sleep(3)
-    except NoSuchElementException:
-      driver.find_element(By.XPATH,
-                          '//button[@id="ParameterUpdateButton"]').click()
-    finally:
-      driver.find_element(
-        By.XPATH, '//span[contains(text(), "Total Postings")]').click()
+          time.sleep(3)
+        except NoSuchElementException:
+          driver.find_element(By.XPATH,
+                              '//button[@id="ParameterUpdateButton"]').click()
+        finally:
+          driver.find_element(
+            By.XPATH, '//span[contains(text(), "Total Postings")]').click()
 
-      driver.find_element(
-        By.XPATH,
-        '//span[contains(text(), "Top Occupations (SSOC)")]').click()
+          driver.find_element(
+            By.XPATH,
+            '//span[contains(text(), "Top Occupations (SSOC)")]').click()
 
-      driver.find_element(By.XPATH,
-                          '//span[contains(text(), "5-D SSOC 2020")]').click()
+          driver.find_element(By.XPATH,
+                              '//span[contains(text(), "5-D SSOC 2020")]').click()
 
-      time.sleep(2)
+          time.sleep(2)
 
-      driver.find_element(
-        By.XPATH,
-        '//div[@id="liveSeriesSubPopupDataOccupation00"]/ul/li[2]').click()
+          driver.find_element(
+            By.XPATH,
+            '//div[@id="liveSeriesSubPopupDataOccupation00"]/ul/li[2]').click()
 
-      driver.find_element(By.XPATH,
-                          '//span[contains(text(), "Annually")]').click()
+          driver.find_element(By.XPATH,
+                              '//span[contains(text(), "Annually")]').click()
 
-      time.sleep(2)
+          time.sleep(2)
 
-      driver.find_element(
-        By.XPATH, '//div[@id="liveSeriesIntervalPopup0"]/ul/li[1]').click()
+          driver.find_element(
+            By.XPATH, '//div[@id="liveSeriesIntervalPopup0"]/ul/li[1]').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    wait.until(
-      EC.element_to_be_clickable(
-        (By.XPATH, '//div[@id="Workforce-export-section"]')))
-    driver.find_element(By.XPATH,
-                        '//div[@id="Workforce-export-section"]').click()
-    driver.find_element(By.XPATH, '//span[text()="Excel"]').click()
+        wait.until(
+          EC.element_to_be_clickable(
+            (By.XPATH, '//div[@id="Workforce-export-section"]')))
+        driver.find_element(By.XPATH,
+                            '//div[@id="Workforce-export-section"]').click()
+        driver.find_element(By.XPATH, '//span[text()="Excel"]').click()
 
-    time.sleep(5)
+        time.sleep(5)
 
-    driver.find_element(
-      By.XPATH, '//button[contains(text(), "Create/edit Report")]').click()
-    time.sleep(1)
+        driver.find_element(
+          By.XPATH, '//button[contains(text(), "Create/edit Report")]').click()
+        time.sleep(1)
 
-    occupation_accordion = driver.find_element(
-      By.XPATH, '//div[@id="accordionOccupation"]')
-    if 'expanded' not in occupation_accordion.get_attribute('class'):
-      occupation_accordion.click()
+        occupation_accordion = driver.find_element(
+          By.XPATH, '//div[@id="accordionOccupation"]')
+        if 'expanded' not in occupation_accordion.get_attribute('class'):
+          occupation_accordion.click()
 
-    time.sleep(1)
-    driver.find_element(By.XPATH, '//a[text()="SSOC Occupations"]').click()
+        time.sleep(1)
+        driver.find_element(By.XPATH, '//a[text()="SSOC Occupations"]').click()
 
-    driver.find_element(By.XPATH, '//span[@class="combineImgText"]').click()
+        driver.find_element(By.XPATH, '//span[@class="combineImgText"]').click()
 
-    file_path = '/tmp/Time Series Analysis.xlsx'
-    time_counter = 0
-    while not os.path.exists(file_path):
-      time.sleep(1)
-      time_counter += 1
-      if time_counter > 20:
-        break
-    
-    new_file_name = "Time Series Analysis_ssoc_" + str(ssoc) + ".xlsx"
-    new_file_path = os.path.join('/tmp', new_file_name)
-    shutil.move(file_path, new_file_path)
+        file_path = '/tmp/Time Series Analysis.xlsx'
+        time_counter = 0
+        while not os.path.exists(file_path):
+          time.sleep(1)
+          time_counter += 1
+          if time_counter > 20:
+            break
+        
+        new_file_name = "Time Series Analysis_ssoc_" + str(ssoc) + ".xlsx"
+        new_file_path = os.path.join('/tmp', new_file_name)
+        shutil.move(file_path, new_file_path)
+      except ElementClickInterceptedException:
+        continue
+      break
   
   time.sleep(5)
 
