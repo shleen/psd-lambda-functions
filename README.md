@@ -1,6 +1,8 @@
 # Documentation - MPS + BG
 This page details the work done by Sheline to extract, clean, and process the MPS and BG data sources.
 
+## Windows Users
+If you are using a Windows Machine, you need to use the Windows Subsystem for Linux (WSL). 
 ## Data Sources
 ### MPS
 This is the IMDA Manpower Survey. It is administered by IMDA annually, and collates data points like employment and vacancy numbers, and a variety of other numbers.
@@ -39,11 +41,15 @@ This section outlines the existing + planned pipeline to automatically extract a
 ### Deploying to AWS Lambda
 If you require Selenium, you're gonna have to create a Docker container and deploy that to Lambda.
 
+1. Install [node](https://nodejs.org/en/download)
+    a. Type `which npm` to check the location of node. 
+    b. Type `npm` to ensure that your WSL/Linux system is able to access node. 
+    c. If there are any issues, update your WSL from 1 to 2 (or the latest version).
 1. Navigate to [this](https://github.com/shleen/psd-lambda-functions) GitHub repository and clone the `template` folder.
 2. Edit the `handler` function in `main.py` to include your code.
 3. Edit `Dockerfile` after Line 15 to include `pip install` lines for all the packages your script requires.
 4. Edit `serverless.yml`. Specifically, lines 2, 3, and 16.
-4. (For first-time users) Set up `serverless`. To do  this, run `npm install -g serverless`
+4. (For first-time users) Set up `serverless`. To do  this, run `npm install -g serverless`. Then, configure serverless with your AWS credentials by running `serverless config credentials --provider aws --key <AWS_ACCESS_KEY> --secret <AWS_SECRET_KEY> -o`.
 5. `cd` into the folder with your Lambda function
 6. Run `sls deploy`
 7. To invoke the function, run `sls invoke --function function_name`. The `function_name` here is what you set on line 16 from step 4 above.
