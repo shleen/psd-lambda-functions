@@ -188,7 +188,7 @@
                     "Action": "sts:AssumeRole",
                     "Condition": {
                       "StringEquals": {
-                        "sts:ExternalId": "ServerlessEnterprise-a5bfd87b-6d2f-47f2-805a-c544823238bc"
+                        "sts:ExternalId": "ServerlessEnterprise-f82fdd57-4761-48d6-8807-70ce07b64443"
                       }
                     }
                   }
@@ -224,7 +224,7 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:890ce8f2a5febbe6315d0bfc43b9950000e4b105790c3208de989fbbbb73f7ff"
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:57d3c8e9647e96b06eddabfc6e4ad8264722f9e272f66f39fd2d2f8d93c4f0b7"
               },
               "PackageType": "Image",
               "FunctionName": "extract-bg-prod-time_series",
@@ -241,20 +241,20 @@
               "TimeUnderscoreseriesLogGroup"
             ]
           },
-          "TimeUnderscoreseriesLambdaVersionH4HW3UqHdVbtyIna833wMNazo9M3thoJO7c4HetI54": {
+          "TimeUnderscoreseriesLambdaVersioncfAkvpNz8JhzIwcqV4Pgsf5ziNxFoxm0kqa1DjhCoE": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "TimeUnderscoreseriesLambdaFunction"
               },
-              "CodeSha256": "890ce8f2a5febbe6315d0bfc43b9950000e4b105790c3208de989fbbbb73f7ff"
+              "CodeSha256": "57d3c8e9647e96b06eddabfc6e4ad8264722f9e272f66f39fd2d2f8d93c4f0b7"
             }
           },
           "CWLSubFilterTimeUnderscoreseriesLogGroupApSoutheast1": {
             "Type": "AWS::Logs::SubscriptionFilter",
             "Properties": {
-              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:a5bfd87b-6d2f-47f2-805a-c544823238bc#TxPFwx99jk5TkCJjqW#extract-bg#prod",
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
               "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
               "LogGroupName": {
                 "Ref": "TimeUnderscoreseriesLogGroup"
@@ -285,7 +285,7 @@
           "TimeUnderscoreseriesLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "TimeUnderscoreseriesLambdaVersionH4HW3UqHdVbtyIna833wMNazo9M3thoJO7c4HetI54"
+              "Ref": "TimeUnderscoreseriesLambdaVersioncfAkvpNz8JhzIwcqV4Pgsf5ziNxFoxm0kqa1DjhCoE"
             },
             "Export": {
               "Name": "sls-extract-bg-prod-TimeUnderscoreseriesLambdaFunctionQualifiedArn"
@@ -390,13 +390,13 @@
         "package": {},
         "memory": 2048,
         "vpc": {},
-        "versionLogicalId": "TimeUnderscoreseriesLambdaVersionH4HW3UqHdVbtyIna833wMNazo9M3thoJO7c4HetI54"
+        "versionLogicalId": "TimeUnderscoreseriesLambdaVersioncfAkvpNz8JhzIwcqV4Pgsf5ziNxFoxm0kqa1DjhCoE"
       }
     },
     "configValidationMode": "warn",
     "serviceFilename": "serverless.yml",
     "initialServerlessConfig": {
-      "org": "imdapsd",
+      "org": "fuwentay",
       "app": "extract-bg",
       "service": "extract-bg",
       "provider": {
@@ -407,15 +407,15 @@
       }
     },
     "app": "extract-bg",
-    "org": "imdapsd",
+    "org": "fuwentay",
     "layers": {},
     "isDashboardMonitoringPreconfigured": true,
     "isDashboardAppPreconfigured": true,
-    "orgUid": "a5bfd87b-6d2f-47f2-805a-c544823238bc",
-    "appUid": "TxPFwx99jk5TkCJjqW"
+    "orgUid": "f82fdd57-4761-48d6-8807-70ce07b64443",
+    "appUid": "kn7Bq1Z0fT3wSYwlzl"
   },
   "package": {
-    "artifactDirectoryName": "serverless/extract-bg/prod/1689228900747-2023-07-13T06:15:00.747Z",
+    "artifactDirectoryName": "serverless/extract-bg/prod/1689738182560-2023-07-19T03:43:02.560Z",
     "artifact": ""
   }
 }
