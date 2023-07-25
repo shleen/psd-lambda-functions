@@ -14,6 +14,7 @@ RUN pip install selenium==4.9.1
 RUN pip install pandas
 RUN pip install python-dotenv
 RUN pip install boto3
+RUN pip install openpyxl
 COPY --from=build /opt/chrome-linux /opt/chrome
 COPY --from=build /opt/chromedriver /opt/
 COPY main.py ./

@@ -98,12 +98,17 @@ def get_time_series(driver, wait):
   for ssoc in SSOCs:
 
     while True:
-      print('Processing SSOC: {}'.format(ssoc))
+      print('Time Series SSOC: {}'.format(ssoc))
       
       # Print time elapsed
       t1 = time.time()
       
       try:
+        # FIXME: use wait until clickable
+        wait.until(
+          EC.element_to_be_clickable(
+            (By.XPATH, '//input[@id="JTAndOccsOnetCode"]')))
+
         ssoc_input = driver.find_element(By.XPATH,
                                         '//input[@id="JTAndOccsOnetCode"]')
         ssoc_input.click()  # give focus
@@ -142,7 +147,6 @@ def get_time_series(driver, wait):
           ##################### CHANGE SLEEP
           time.sleep(2)
 
-          #FIXME: call save_screenshot()
           # driver.save_screenshot('BeforeClickAnnually.png')
           s3_client = boto3.client('s3')
           # s3_client.upload_file('BeforeClickAnnually.png', 'psd-dashboard-data', 'BeforeClickAnnually.png')
@@ -150,20 +154,19 @@ def get_time_series(driver, wait):
           driver.find_element(By.XPATH,
                               '//span[contains(text(), "Annually")]').click()
           
-          #FIXME: call save_screenshot()
           # driver.save_screenshot('AfterClickAnnually.png')
           # s3_client.upload_file('AfterClickAnnually.png', 'psd-dashboard-data', 'AfterClickAnnually.png')          
           
-          #FIXME: make monthly button red!!!! is the ID of monthly button correct? click was changed to change colour!! INDEX OF MONTHLY IS 2!!!!
           try:
+            # make "monthly" button red to see if the ID is correct. turns out index starts from 1
             # element = driver.find_element(
             #   By.XPATH, '//div[@id="liveSeriesIntervalPopup0"]/ul/li[2]')
             # driver.execute_script("arguments[0].setAttribute('style', 'background-color:DodgerBlue')", element)
             driver.find_element(
+              # html starts from 1
               By.XPATH, '//div[@id="liveSeriesIntervalPopup0"]/ul/li[2]').click()
             time.sleep(3)
 
-            #FIXME: call save_screenshot()
             # driver.save_screenshot('AfterClickMonthly.png')
             # s3_client.upload_file('AfterClickMonthly.png', 'psd-dashboard-data', 'AfterClickMonthly.png')
 
@@ -173,7 +176,7 @@ def get_time_series(driver, wait):
           driver.find_element(By.XPATH,
                               '//button[@id="ParameterUpdateButton"]').click()
           
-
+        # FIXME: delete time sleep and test if it breaks
         time.sleep(3)
 
         wait.until(
@@ -194,7 +197,7 @@ def get_time_series(driver, wait):
         if 'expanded' not in occupation_accordion.get_attribute('class'):
           occupation_accordion.click()
 
-        # FIXME: maybe breaking because of this time sleep. increased from 1 to 2.
+        # FIXME: if wait until clickable above works, change this back to 1
         time.sleep(2)
         driver.find_element(By.XPATH, '//a[text()="SSOC Occupations"]').click()
 
@@ -227,36 +230,36 @@ def handler(event=None, context=None):
   start = time.time()
   load_dotenv()
   
-  try:
-    options = webdriver.ChromeOptions()
-    options.binary_location = '/opt/chrome/chrome'
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1280x1696")
-    options.add_argument("--single-process")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-dev-tools")
-    options.add_argument("--no-zygote")
-    options.add_argument(f"--user-data-dir={mkdtemp()}")
-    options.add_argument(f"--data-path={mkdtemp()}")
-    options.add_argument(f"--disk-cache-dir={mkdtemp()}")
-    options.add_argument("--remote-debugging-port=9222")
-    prefs = {"profile.default_content_settings.popups": 0,    
-            "download.default_directory":r"/tmp",
-            "download.prompt_for_download": False,
-            "directory_upgrade": True}
-    options.add_experimental_option("prefs", prefs)
-    driver = webdriver.Chrome("/opt/chromedriver", options=options)
+  # try:
+  options = webdriver.ChromeOptions()
+  options.binary_location = '/opt/chrome/chrome'
+  options.add_argument('--headless')
+  options.add_argument('--no-sandbox')
+  options.add_argument("--disable-gpu")
+  options.add_argument("--window-size=1280x1696")
+  options.add_argument("--single-process")
+  options.add_argument("--disable-dev-shm-usage")
+  options.add_argument("--disable-dev-tools")
+  options.add_argument("--no-zygote")
+  options.add_argument(f"--user-data-dir={mkdtemp()}")
+  options.add_argument(f"--data-path={mkdtemp()}")
+  options.add_argument(f"--disk-cache-dir={mkdtemp()}")
+  options.add_argument("--remote-debugging-port=9222")
+  prefs = {"profile.default_content_settings.popups": 0,    
+          "download.default_directory":r"/tmp",
+          "download.prompt_for_download": False,
+          "directory_upgrade": True}
+  options.add_experimental_option("prefs", prefs)
+  driver = webdriver.Chrome("/opt/chromedriver", options=options)
 
-    wait = WebDriverWait(driver, 5)
-    login(driver, wait)
+  wait = WebDriverWait(driver, 30)
+  login(driver, wait)
 
-    get_time_series(driver, wait)
-    consolidate_time_series_analysis()
+  get_time_series(driver, wait)
+  consolidate_time_series_analysis()
 
-  except Exception as e:
-    print("Exception occured: ", e)
+  # except Exception as e:
+  #   print("Exception occured: ", e)
 
   end = time.time()
   time_elapsed = end - start

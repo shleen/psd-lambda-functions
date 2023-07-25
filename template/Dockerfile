@@ -13,6 +13,8 @@ RUN yum install atk cups-libs gtk3 libXcomposite alsa-lib \
 RUN pip install selenium==4.9.1
 RUN pip install pandas
 RUN pip install python-dotenv
+RUN pip install openpyxl
+RUN pip install boto3
 COPY --from=build /opt/chrome-linux /opt/chrome
 COPY --from=build /opt/chromedriver /opt/
 COPY main.py ./

@@ -1,0 +1,31 @@
+org: fuwentay
+app: extract-bg
+service: extract-bg
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'prod'}
+  region: ${env:AWS_REGION, 'ap-southeast-1'}
+  ecr:
+    images:
+      time_series_img:
+        path: ./bg_time_series/
+        platform: linux/amd64
+      occupation_analysis_img:
+        path: ./bg_occupation_analysis/
+        platform: linux/amd64
+
+functions:
+  # lambda function name used for invoke
+  time_series:
+    timeout: 60
+    # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+    memorySize: 2048
+    image:
+      name: time_series_img
+  occupation_analysis:
+    timeout: 60
+    # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+    memorySize: 2048
+    image:
+      name: occupation_analysis_img
