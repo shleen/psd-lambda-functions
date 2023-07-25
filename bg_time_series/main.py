@@ -266,4 +266,4 @@ def handler(event=None, context=None):
   print('Time elapsed: {}s'.format(time_elapsed))
 
 # Uncomment for docker testing, comment for AWS lambda testing
-# handler()
+handler()
