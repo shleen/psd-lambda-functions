@@ -26,6 +26,7 @@ C_API = {'AUS': '0:15:1:0',
 'PRT': '0:13:2:0',
 'ESP': '0:13:2:0',
 'SWE': '0:13:2:0'}
+
 # Country code used, it can be referenced from pycountry, but workato does not provide access to pycountry so this is used in the script on workato instead 
 COUNTRY_CODE = {'AUS': 'Australia', 
           'ISR': 'Israel', 
