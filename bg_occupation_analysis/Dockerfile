@@ -2,6 +2,8 @@
 # A Docker container is required so that we can have the specific/right versions of the libraries on AWS (e.g. selenium 4.9.1).
 # Additionally, we can first run the Docker container locally and conduct testing before running the script on AWS which would take a significantly longer time.
 
+# Layering of the different components:
+
 # AWS Lambda {
 #     Docker container 1{
 #         Libraries {
