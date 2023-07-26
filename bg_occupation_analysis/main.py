@@ -1,4 +1,4 @@
-# Motivation: The data extracted from LabourInsights are regarding skills on the demand-side. This can be contrasted with skills on the supply-side (e.g. what 
+# Motivation: The data extracted from LabourInsights regard skills on the demand-side. This can be contrasted with skills on the supply-side (e.g. what 
 # skills do the graduates coming out of University possess), allowing us to determine the skill gap.
 
 # This script is currently deployed on AWS Lambda. It's purpose is to scrape "Occupation Analysis" information from LabourInsights (Burning Glass)
