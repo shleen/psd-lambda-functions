@@ -1,3 +1,9 @@
+# This script is currently deployed on AWS Lambda. It's purpose is to scrape "Occupation Analysis" information from LabourInsights (Burning Glass)
+# and to upload it on Amazon S3 as an Excel file -- object storage service that stores data as objects.
+# To call/invoke this script, we use a Workato recipe with a scheduler trigger. At the indicated timing or frequency, this script would be ran on AWS
+# and the information would be uploaded on S3.
+# A separate Workato recipe scans for new files on S3 in specified intervals and would email the Excel file to the preferred email once it has been fetched.
+
 # Import libraries
 import boto3
 import os
@@ -29,7 +35,7 @@ SSOCs = [
   3522, 3523, 3620, 4132, 4315, 5142, 7421, 7422
 ]
 
-# Automate the login process. It is defined as a stand-alone function because we want to call the login function when there is a force logout on LabourInsights (BG)
+# Automate the login process. It is defined as a stand-alone function because we want to call the login function when there is a force logout on LabourInsights
 def login(driver, wait):
   driver.get("https://labourinsight.lightcast.io/sgp")
 

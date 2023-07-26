@@ -1,3 +1,30 @@
+# This file assembles a Docker image that defines how the Docker container will be realised.
+# A Docker container is required so that we can have the specific/right versions of the libraries on AWS (e.g. selenium 4.9.1).
+# Additionally, we can first run the Docker container locally and conduct testing before running the script on AWS which would take a significantly longer time.
+
+# AWS Lambda {
+#     Docker container 1{
+#         Libraries {
+#             Selenium 4.9.1
+#             ...
+#         }
+#         Lambda Functions {
+#             bg_occupation_analysis
+#             ...
+#         }
+#     }
+#     Docker container 2{
+#         Libraries {
+#             Selenium 4.9.1
+#             ...
+#         }
+#         Lambda Functions {
+#             bg_time_series
+#             ...
+#         }
+#     }
+# }
+
 FROM public.ecr.aws/lambda/python@sha256:7f867f958f685d4321e4520e20b13900a47210ee57b3e41d05395b11f4c93c70 as build
 RUN yum install -y unzip && \
     curl -Lo "/tmp/chromedriver.zip" "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip" && \
@@ -10,6 +37,8 @@ RUN yum install atk cups-libs gtk3 libXcomposite alsa-lib \
     libXcursor libXdamage libXext libXi libXrandr libXScrnSaver \
     libXtst pango at-spi2-atk libXt xorg-x11-server-Xvfb \
     xorg-x11-xauth dbus-glib dbus-glib-devel -y
+
+# Specific packages you would like to pip install that aren't native to Python
 RUN pip install selenium==4.9.1
 RUN pip install pandas
 RUN pip install python-dotenv
