@@ -1,3 +1,6 @@
+# Motivation: The data extracted from LabourInsights are regarding skills on the demand-side. This can be contrasted with skills on the supply-side (e.g. what 
+# skills do the graduates coming out of University possess), allowing us to determine the skill gap.
+
 # This script is currently deployed on AWS Lambda. It's purpose is to scrape "Occupation Analysis" information from LabourInsights (Burning Glass)
 # and to upload it on Amazon S3 as an Excel file -- object storage service that stores data as objects.
 # To call/invoke this script, we use a Workato recipe with a scheduler trigger. At the indicated timing or frequency, this script would be ran on AWS
