@@ -1,3 +1,6 @@
+The data is for employment by year for selected list of countries for the sector 
+of Information and Communication (ISIC Rev 4). 
+
 Below is how the data should look like (updated as of 14 July 2023):
 
 |Country Code|Country  |2008   |2009   |2010   |2011   |2012   |2013   |2014   |2015   |2016   |2017   |2018   |2019    |2020    |2021    |2022|2023|
