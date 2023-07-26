@@ -1,5 +1,6 @@
 # Motivation: The data extracted from LabourInsights regard skills on the demand-side. This can be contrasted with skills on the supply-side (e.g. what 
-# skills do the graduates coming out of University possess), allowing us to determine the skill gap.
+# skills do the graduates coming out of University possess), allowing us to determine the skill gap. The SSOC data that we are extracting from are the SSOCs of 
+# identified tech jobs that are indicative of the hiring tech landscape in Singapore. These SSOCs are obtained from the manpower survey.
 
 # This script is currently deployed on AWS Lambda. It's purpose is to scrape "Occupation Analysis" information from LabourInsights (Burning Glass)
 # and to upload it on Amazon S3 as an Excel file -- object storage service that stores data as objects.
