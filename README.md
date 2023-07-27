@@ -25,11 +25,10 @@ This is Burning Glass. Specifically, we use the Labour Insight dashboard made by
 ### United States Bureau of Labour Statistics
 The Bureau of Labor Statistics is a unit of the United States Department of Labor. It is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics and serves as a principal agency of the U.S. Federal Statistical System.
 
-We intend to incorporate the following as part of our policy questions:
+In particular, We intend to incorporate the following as part of our policy questions:
 1.	Demand/Vacancies for Tech Occupations with respect to US
 2.	Which sectors have the highest employment of tech occupations
 
-In particular, 
 
 ### QS
 This is Quacquarelli Symonds rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
