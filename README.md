@@ -34,8 +34,7 @@ This section outlines the existing + planned pipeline to automatically extract a
 ### BG
 1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the BG data.
 2. The BG data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered with the new file gets uploaded onto S3. This recipe will download the file.
-4. This file will be automatically sent as an attachment to an email to your email<sup>5</sup>.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
 ## Technical Details
 ### Deploying to AWS Lambda
