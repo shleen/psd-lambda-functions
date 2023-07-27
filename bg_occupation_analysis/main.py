@@ -164,6 +164,7 @@ def get_occupation_analysis(driver, actions, wait):
         file_name = "Occupation Analysis.xlsx"
         file_path = "/tmp/" + file_name
 
+        # A low-level client representing Amazon Simple Storage Service (S3)
         s3_client = boto3.client('s3')
         
         # To ensure there is sufficient download time, up to 20s. 
@@ -221,12 +222,13 @@ def consolidate_occupation_analysis_skills():
     # Read 'Occupation Analysis' report
     skill_sheet = pd.read_excel('/tmp/' + file, 'Skills', skiprows=7)
 
-    # Add 'SSOC' column by extracting the ssoc from the filename
+    # Add 'SSOC' column by extracting the ssoc from the filename. [-9:-5] refers to the last few characters of the file name that corresponds to the SSOC number.
     skill_sheet['SSOC'] = file[-9:-5]
 
     # Drop 'Salary Premium' column
     skill_sheet.drop(labels=['Salary Premium'], axis=1, inplace=True)
 
+    # Else, go into append mode to add the skill sheet of each SSOC
     if not os.path.isfile('/tmp/Occupation Analysis Skills.csv'):
       skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv', header=True)
     else:
