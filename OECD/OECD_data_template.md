@@ -2,7 +2,9 @@ The data is for employment by year for selected list of countries for the sector
 of Information and Communication (ISIC Rev 4). 
 
 Each row is the data for the specified Country.  
-Numbers which are shown are the numbers for employment in the Information and Communication sector/industry for the country. 
+Numbers which are shown are the numbers for employment in the Information and Communication sector/industry for the country.  
+Meaning of employment and more information can be found below under footnotes.  
+It was copied directly from the explanation on [stats.oecd.org](https://stats.oecd.org/) on the right when viewing the data. 
 
 Below is how the data should look like (updated as of 14 July 2023):
 
@@ -24,14 +26,13 @@ Below is how the data should look like (updated as of 14 July 2023):
 |ESP         |Spain    |575.175|533.3  |527.7  |533.275|534.625|522.85 |515.62 |530.23 |545.60 |584.83 |584.88 |602.625 |613.025 |670.775 |na  |na  |
 |SWE         |Sweden   |181.85 |179.5  |174.95 |191.4  |200.525|196.55 |197.07 |202.68 |207.43 |223.97 |239.20 |255.175 |269.9   |292.425 |na  |na  |
 
-
+## Footnotes
 
 To view the data online:
 1. Go to [stats.oecd.org](https://stats.oecd.org/)
 2. On the left, click in this order => `Labour` > `Labour Force Statistics` > `Employment by activities and status (ALFS)` > `Employment by activities (ISIC Rev 4)`
 
-Statistical population  
-<sup>
+### Statistical population  
 The “Employment by activities and status (ALFS)” dataset is a subset of the Annual Labour Force Statistics (ALFS) database which contains annual labour force statistics for the 38 OECD member countries plus Brazil and Russian Federation.
 
 This dataset contains employment and the number of employees, broken down:
@@ -49,10 +50,8 @@ There are years for which data are available in both Revision 2 and 3 or in both
 In some cases, the data according to both revisions are updated while only the latest is revised in other cases. This explains why in some cases, the level of employment or the number of employees are different according to the two ISIC revisions. Unless otherwise specified in the country notes data are compiled from the Labour Force Surveys.
 
 (2) The professional status is defined in the International Classification by status in Employment (ICSE-1993). To be considered as an unpaid family worker, the hour-threshold varies from one hour to 18 hours a week.
-</sup>
 
-Recommended uses and limitations
-<sup>
+### Recommended uses and limitations  
 Annual data in this dataset are typically calculated as averages of infra-annual estimates. This can lead to differences with annual data published by National Statistics Institutes.
 
 This dataset contains estimates from the OECD Secretariat for the latest years when countries did not provide data. These estimates are necessary to compile aggregated statistics for the geographical areas for a complete span of time.
@@ -60,4 +59,3 @@ This dataset contains estimates from the OECD Secretariat for the latest years w
 Since 2003, employment data by sector for the United States are compiled following the North American Industrial Classification System (NAICS); therefore they are not strictly comparable with other countries’ data.
 
 Euro area refer to Euro area with 19 countries. European Union refers to European Union with 27 countries.
-</sup>
