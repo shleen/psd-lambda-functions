@@ -32,7 +32,7 @@ To view the data online:
 1. Go to [stats.oecd.org](https://stats.oecd.org/)
 2. On the left, click in this order => `Labour` > `Labour Force Statistics` > `Employment by activities and status (ALFS)` > `Employment by activities (ISIC Rev 4)`
 
-### Statistical population  
+### Statistical population (updated as of 27 July 2023)  
 The “Employment by activities and status (ALFS)” dataset is a subset of the Annual Labour Force Statistics (ALFS) database which contains annual labour force statistics for the 38 OECD member countries plus Brazil and Russian Federation.
 
 This dataset contains employment and the number of employees, broken down:
@@ -51,7 +51,7 @@ In some cases, the data according to both revisions are updated while only the l
 
 (2) The professional status is defined in the International Classification by status in Employment (ICSE-1993). To be considered as an unpaid family worker, the hour-threshold varies from one hour to 18 hours a week.
 
-### Recommended uses and limitations  
+### Recommended uses and limitations (updated as of 27 July 2023)  
 Annual data in this dataset are typically calculated as averages of infra-annual estimates. This can lead to differences with annual data published by National Statistics Institutes.
 
 This dataset contains estimates from the OECD Secretariat for the latest years when countries did not provide data. These estimates are necessary to compile aggregated statistics for the geographical areas for a complete span of time.
