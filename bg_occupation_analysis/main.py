@@ -1,3 +1,14 @@
+# Motivation: The data extracted from LabourInsights regard skills on the demand-side. This can be contrasted with skills on the supply-side (e.g. what 
+# skills do the graduates coming out of University possess), allowing us to determine the skill gap. The SSOC data that we are extracting from are the SSOCs of 
+# identified tech jobs that are indicative of the hiring tech landscape in Singapore. These SSOCs are obtained from the manpower survey.
+
+# This script is currently deployed on AWS Lambda. It's purpose is to scrape "Occupation Analysis" information from LabourInsights (Burning Glass)
+# and to upload it on Amazon S3 as an Excel file -- object storage service that stores data as objects.
+# To call/invoke this script, we use a Workato recipe with a scheduler trigger. At the indicated timing or frequency, this script would be ran on AWS
+# and the information would be uploaded on S3.
+# A separate Workato recipe scans for new files on S3 in specified intervals and would email the Excel file to the preferred email once it has been fetched.
+
+# Import libraries
 import boto3
 import os
 import pandas as pd
@@ -18,6 +29,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
+# List of SSOCs to extract data from
 SSOCs = [
   1221, 1222, 
   1330, 1349, 2122, 2123, 2152, 2153, 
@@ -27,9 +39,13 @@ SSOCs = [
   3522, 3523, 3620, 4132, 4315, 5142, 7421, 7422
 ]
 
+# Automate the login process. It is defined as a stand-alone function because we want to call the login function when there is a force logout on LabourInsights
 def login(driver, wait):
   driver.get("https://labourinsight.lightcast.io/sgp")
 
+  # to delay the next step. if there is no delay, the chrome driver would not have enough time to load the element (in this case an element with ID = "loginEmail").
+  # thus, an exception would be raised (NoSuchElementException), breaking the script. in this case, we don't use error handling (try; except) because a simple 
+  # time.sleep() would suffice. there will be more examples of error handling below.
   time.sleep(5)
 
   email_field = driver.find_element(By.ID, "loginEmail")
@@ -43,7 +59,12 @@ def login(driver, wait):
   login_button = driver.find_element(By.ID, "submit")
   login_button.click()
 
+# To go to the page of "Occupation Analysis"
 def navigate_to_occupation_analysis(driver, actions, wait):
+  # delaying for the same purpose as time.sleep() that is used in the function above. 
+  # advantage of using this is that it will waste less time as it stops waiting once element is found. 
+  # disadvantage of this is that some developers unhide buttons just by changing the CSS. this means that the button is always there to the computer but just becomes
+  # visible to the human eye. hence, it will not wait in this scenario.
   wait.until(
     EC.element_to_be_clickable(
       (By.XPATH, '//*[contains(text(), "Occupation Analysis")]')))
@@ -58,38 +79,20 @@ def navigate_to_occupation_analysis(driver, actions, wait):
                                      '//button[contains(text(), "Start")]')
   start_button.click()
 
+# To download Excel sheet of 'Occupation Analysis' for each SSOC
 def get_occupation_analysis(driver, actions, wait):
   navigate_to_occupation_analysis(driver, actions, wait)
 
   for ssoc in SSOCs:
     while True:
       print('Occupation Analysis SSOC: {}'.format(ssoc))
-      
-      # Print time elapsed
       t1 = time.time()
       
       try:
         time.sleep(3)
 
-        # This block first attempts to switch the input mode to SSOC. This will work when
-        # the input pop up is already open. If not, an ElementClickInterceptedException will
-        # be thrown. In this case, the except block will toggle open the pop up and then
-        # switch the input mode to SSOC.
-        
-        # try:
-        #   driver.find_element(By.XPATH, '//span[text()="Switch to SSOC"]').click()
-        # except:
-        #   # it was breaking trying to find "titleFilterSource"
-        #   try:
-        #     driver.find_element(By.XPATH, '//div[@id="titleFilterSource"]').click()
-        #     driver.find_element(By.XPATH, '//span[text()="Switch to SSOC"]').click()
-        #   except:
-        #     # FIXME: breaking somewhere here
-        #     print("give it more time")
-        #     time.sleep(10)
-        #     driver.find_element(By.XPATH, '//div[@id="titleFilterSource"]').click()
-        #     driver.find_element(By.XPATH, '//span[text()="Switch to SSOC"]').click()
-
+        # This block first attempts to switch the input mode to SSOC. This will work when the input pop up is already open. If not, an 
+        # ElementClickInterceptedException will be thrown. In this case, the except block will toggle open the pop up and then switch the input mode to SSOC.
         try:
           driver.find_element(By.XPATH, '//span[text()="Switch to SSOC"]').click()
         except:
@@ -97,9 +100,11 @@ def get_occupation_analysis(driver, actions, wait):
             driver.find_element(By.XPATH, '//div[@id="titleFilterSource"]').click()
             driver.find_element(By.XPATH, '//span[text()="Switch to SSOC"]').click()
           except NoSuchElementException:
+            # Screenshot testing if it catches the exception. Given that AWS Lambda is only able to run Chrome headless, we are not able to see what goes on when
+            # Selenium is tries to click buttons. Hence, Screenshot testing is needed for us to see what actually goes on.
             driver.save_screenshot('cannotclickmenu' + '.png')
             s3_client.upload_file('cannotclickmenu' + '.png', 'psd-dashboard-data', 'cannotclickmenu' + '.png')
-            print("*** retry SSOC -- could not click menu ***")
+            print("*** Retry SSOC -- Could not click menu ***")
             continue
 
         ssoc_input = driver.find_element(By.XPATH,
@@ -126,54 +131,45 @@ def get_occupation_analysis(driver, actions, wait):
             driver.find_element(By.XPATH,
                               '//a[@class="dashboard-filter-reset"]').click()
           except:
+            # When LabourInsights force logouts, we try to log back in and continue from the same SSOC. E.g. If another user uses the same account, the older session
+            # will expire.
             print('getting kicked out here')
             login(driver, wait)
             navigate_to_occupation_analysis(driver, actions, wait)
             continue
           break
 
-        # if noDataPopup and display: block popup is found, break to iterate the next SSOC
-        # when it is not found, we get an NoSuchElementException
-
+        # If "noDataPopup" and "display: block popup" is not found, we get an NoSuchElementException. Thus, we break and go to the next SSOC. E.g. SSOC 3523 is empty.
         try:
           driver.find_element(By.XPATH, '//div[@id="noDataPopup" and @style="display: none;"]')
-          # FIXME: not printing this
-          print("there is data")
         except NoSuchElementException:
           driver.find_element(By.XPATH,
                             '//a[@class="dashboard-filter-reset"]').click()
-          print("there is no data")
           break
-
         
+        # To ensure sufficient time is given to click the menus. It was prone to breaking here.
         wait.until(
           EC.element_to_be_clickable(
             (By.XPATH, '//div[@id="Workforce-export-section"]')))
         driver.find_element(By.XPATH,
                             '//div[@id="Workforce-export-section"]').click()
-        
-        # FIXME: add time sleep here? but there's no error message meaning it's able to click
-        #time.sleep(1)
-
         wait.until(
           EC.element_to_be_clickable(
             (By.XPATH, '//span[text()="Excel"]')))
         driver.find_element(By.XPATH, '//span[text()="Excel"]').click()
 
+        # Additional layer of safety to ensure sufficient time is given.
         time.sleep(5)
 
         file_name = "Occupation Analysis.xlsx"
         file_path = "/tmp/" + file_name
 
-        # TODO: rewrite as try/except
         s3_client = boto3.client('s3')
         
+        # To ensure there is sufficient download time, up to 20s. 
         time_counter = 0
-
-        print("before trying to wait")
-
         while not os.path.exists(file_path):
-          print("file cannot be found \n waiting " + str(time_counter) +"s")
+          print("File cannot be found. Waiting: " + str(time_counter) +"s")
           # screenshot testing
           # driver.save_screenshot('notexist' + str(time_counter) + '.png')
           # s3_client.upload_file('notexist' + str(time_counter) + '.png', 'psd-dashboard-data', 'notexist' + str(time_counter) + '.png')
@@ -182,37 +178,36 @@ def get_occupation_analysis(driver, actions, wait):
           if time_counter > 20: 
             break
 
-        print("after trying to wait")
-
+        # Downloading, renaming and moving the Excel file
         new_file_name = "Occupation Analysis_ssoc_" + str(ssoc) + ".xlsx"
         new_file_path = os.path.join("/tmp", new_file_name)
         try:
           shutil.move(file_path, new_file_path)
         except FileNotFoundError:
-          print("*** retry SSOC -- could not save file ***")
-
+          # If it still fails to download after 20s, we will retry the same SSOC.
+          print("*** Retry SSOC -- Could not save file ***")
           login(driver, wait)
           navigate_to_occupation_analysis(driver, actions, wait)
-
           continue
 
-        # reset filter
+        # Reset filter
         driver.find_element(By.XPATH,
                             '//a[@class="dashboard-filter-reset"]').click()
 
+      # To log back in when kicked out
       except (ElementClickInterceptedException, NoSuchElementException):
-        # for when kicked out
         print('getting kicked out')
         login(driver, wait)
-        # for the stuff above the while loop
         navigate_to_occupation_analysis(driver, actions, wait)
         continue
+
+      # Print time elapsed for each SSOC
       t2 = time.time()
       time_passed = t2 - t1
       print('Time passed: {}s'.format(time_passed))
       break
-    
 
+# Consolidation is done after all the Excel sheets are downloaded. Therefore, deleting after downloading is not an option to save storage.
 def consolidate_occupation_analysis_skills():
   occupation_analysis_files = [
     file for file in os.listdir("/tmp") if 'Occupation Analysis_ssoc_' in file
@@ -235,35 +230,20 @@ def consolidate_occupation_analysis_skills():
     if not os.path.isfile('/tmp/Occupation Analysis Skills.csv'):
       skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv', header=True)
     else:
-      skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv',
-                          mode='a',
-                          header=False)
+      skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv', mode='a', header=False)
   
   s3_client = boto3.client('s3')
   s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', 'Occupation Analysis Skills.csv')
 
+# AWS Lambda calls the handler() function by default. The functions that we want to invoke must be in order in handler(). Thus, we don't need to call handler() in
+# AWS Lambda, but we have to when testing in Docker (because Docker does not call handler() by default).
 def handler(event=None, context=None):
 
-  # assign size
-  size = 0
-
-  # assign folder path
-  Folderpath = '/tmp'
-
-  # get size
-  for path, dirs, files in os.walk(Folderpath):
-    for f in files:
-      fp = os.path.join(path, f)
-      size += os.stat(fp).st_size
-
-  # display size	
-  print("Folder size: " + str(size))
-
-
   start = time.time()
+  # Import API keys
   load_dotenv()
   
-  # try:
+  # Configure ChromeDriver
   options = webdriver.ChromeOptions()
   options.binary_location = '/opt/chrome/chrome'
   options.add_argument('--headless')
@@ -285,20 +265,34 @@ def handler(event=None, context=None):
   options.add_experimental_option("prefs", prefs)
   driver = webdriver.Chrome("/opt/chromedriver", options=options)
 
+  # Delete contents of temp folder
+  for root, dirs, files in os.walk('/tmp'):
+    for f in files:
+        os.unlink(os.path.join(root, f))
+    for d in dirs:
+        shutil.rmtree(os.path.join(root, d))
+
+  # Print size of files in temp folder
+  size = 0
+  Folderpath = '/tmp'
+  for path, dirs, files in os.walk(Folderpath):
+    for f in files:
+      fp = os.path.join(path, f)
+      size += os.stat(fp).st_size
+  print("Folder size: " + str(size))
+
   wait = WebDriverWait(driver, 25)
+  
+  # Call the functions defined above
   login(driver, wait)
-
   actions = ActionChains(driver)
-
   get_occupation_analysis(driver, actions, wait)
   consolidate_occupation_analysis_skills()
 
-  # except Exception as e:
-  #   print("Exception occured: ", e)
-
+  # Print total time elapsed
   end = time.time()
   time_elapsed = end - start
   print('Time elapsed: {}s'.format(time_elapsed))
 
-# Uncomment for docker testing, comment for AWS lambda testing
-handler()
+# Uncomment for docker testing, comment for AWS lambda testing -- because AWS will call handler by default
+# handler()

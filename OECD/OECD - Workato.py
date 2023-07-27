@@ -1,3 +1,5 @@
+# Motivation: OECD data shows us the international employment trends, which enables comparison of employment trends between Singapore and selected overseas countries (those that were picked out as tech hubs).
+
 # This script is used to extract data by year for employment for the selected list of OECD Countries
 # for the sector of Information and Communication (ISIC Rev 4). 
 
