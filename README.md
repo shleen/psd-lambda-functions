@@ -1,5 +1,5 @@
-# Documentation - MPS + BG
-This page details the work done by Sheline to extract, clean, and process the MPS and BG data sources.
+# Documentation  
+This page details the work done by IMDA PSD Interns (Sheline, Benedict, Aarthi, Anir, Vania, Fuwen) to extract, clean, and process all the data sources for the final dashboard.
 
 ## Windows Users
 If you are using a Windows Machine, you need to use the Windows Subsystem for Linux (WSL). 
