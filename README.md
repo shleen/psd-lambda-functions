@@ -29,9 +29,8 @@ In particular, We intend to incorporate the following as part of our policy ques
 1.	Demand/Vacancies for Tech Occupations with respect to US
 2.	Which sectors have the highest employment of tech occupations
 
-
 ### QS
-This is Quacquarelli Symonds rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
+This is Quacquarelli Symonds Rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
 
 1. University
 - You can get the University Name from the table .
@@ -69,6 +68,73 @@ This is Shanghai Rankings. Specifically, we filter by Computer Science and Engin
 - You can get the CNCI from the table.
 3. TOP
 - You can get the TOP from the table.
+
+### OECD
+This is Organisation for Economic Co-operation and Development. It comprises of the 
+data from various country members. Specifically, we get the Employment by Activities 
+(ISIC Rev 4) for the list of countries we are interested in. We get the employment 
+numbers of the Information and Commuication sectors/industries of these countries for 
+every year, starting from 2008 to the present year/the most updated year.
+
+We are only extracting employment numbers from the Infocomm sectors/industries from 
+these countries, which can used to look at the trends over time for employment numbers 
+and be used to compare versus Singapore's employment trends. 
+
+### CB Insights
+CB Insights is a private company with a business analytics platform and global 
+database that provides market intelligence on private companies and investor 
+activities. The platform is targeted at private equity, venture capital, investment 
+banking, angel investing, and consulting professionals by providing insights about 
+high growth private companies. 
+
+Fun Fact: CB stands for ChubbyBrain 
+[link](https://www.cbinsights.com/research/team-blog/cb-cb-insights-stand-for/)
+
+We are currently extracting these data points: 
+
+1. Search Input  
+    - Used to check if we are searching for the correct items
+2. Company Name
+3. URL
+    - Used to check if it is the correct company, should we find any inconsistencies
+with other rows
+1. Total Funding
+    - Funding/Investment amount
+2. Description
+    - Used to check if it is the correct company in terms of what they do
+3. Total Headcount
+    - Potential future datapoint in seeing where the tech talent are going, and if
+there are any emerging companies/industries
+1. Country
+2. Sector
+3.  Industry
+4.  Sub-Industry
+5.  Latest Valuation
+
+CB Insights groups campanies under Sector, Industry and Sub-Industry, with each being 
+more detailed than the previous. 
+
+We are currently only pulling data from 6 Sectors:
+
+1. Computer Hardware & Services
+2. Electronics
+3. Media (Traditional)
+4. Internet
+5. Mobile & Telecommunications
+6. Software (non-internet/mobile)
+
+As you go down into Industry/Sub-Industry, the companies will be more specifically classified and this is a potential area to explore in the future. 
+
+### MOM Recruitment and Resignation Rate
+This data is taken directly from the Ministry of Manpower (MOM) website 
+([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). It comprises 
+of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this 
+data is:
+
+1. **Recruitment Rate**: The recruitment rate is useful as another data source to 
+compare for output of tech talent.
+2. **Resignation rate**: The resignation rate is useful to compare and see if there is 
+a higher than normal resignation rate for the Infocomm sector. 
 
 ## Data Extraction + Preparation Pipeline
 This section outlines the existing + planned pipeline to automatically extract and prepare the above 2 data sources for visualization in Tableau.
