@@ -160,6 +160,15 @@ This section outlines the existing + planned pipeline to automatically extract a
 2. The overall combined score data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
 
+### OECD
+details to be udpated
+
+### CB Insights
+details to be udpated
+
+### MOM Recruitment and Resignation Rate
+details to be udpated
+
 ## Technical Details
 ### Deploying to AWS Lambda
 If you require Selenium, you're gonna have to create a Docker container and deploy that to Lambda.
