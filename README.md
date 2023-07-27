@@ -5,7 +5,7 @@ This page details the work done by IMDA PSD Interns (Sheline, Benedict, Aarthi, 
 If you are using a Windows Machine, you need to use the Windows Subsystem for Linux (WSL). 
 ## Data Sources
 ### MPS
-This is the IMDA Manpower Survey. It is administered by IMDA annually, and collates data points like employment and vacancy numbers, and a variety of other numbers.
+This is the IMDA Manpower Survey. It is administered by IMDA annually and collates data points like employment and vacancy numbers, and a variety of other numbers.
 
 Ideally, we want the 'Employment' and 'Vacancy' columns from the 'EmpVacDmd' sheet in the MPS Excel workbook to be fed into Tableau. To do that, we need to
 
@@ -21,6 +21,15 @@ This is Burning Glass. Specifically, we use the Labour Insight dashboard made by
 2. Time Series Analysis
     - You can find this at Create Reports > Focus on - Time Series Analysis
     - We use this report to get the number of job postings on a monthly basis for each SSOC that we're tracking. These numbers give us a sense of the industry's demand for each occupation.
+
+### United States Bureau of Labour Statistics
+The Bureau of Labor Statistics is a unit of the United States Department of Labor. It is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics and serves as a principal agency of the U.S. Federal Statistical System.
+
+We intend to incorporate the following as part of our policy questions:
+1.	Demand/Vacancies for Tech Occupations with respect to US
+2.	Which sectors have the highest employment of tech occupations
+
+In particular, 
 
 ### QS
 This is Quacquarelli Symonds rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
@@ -74,6 +83,11 @@ This section outlines the existing + planned pipeline to automatically extract a
 ### BG
 1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the BG data.
 2. The BG data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### US BLS
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the US BLS data.
+2. The US BLS data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
 ### QS, THE, SHANGHAI
