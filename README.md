@@ -22,6 +22,46 @@ This is Burning Glass. Specifically, we use the Labour Insight dashboard made by
     - You can find this at Create Reports > Focus on - Time Series Analysis
     - We use this report to get the number of job postings on a monthly basis for each SSOC that we're tracking. These numbers give us a sense of the industry's demand for each occupation.
 
+### QS
+This is Quacquarelli Symonds rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
+
+1. University
+- You can get the University Name from the table .
+2. Country
+- You can get the Country and City Name combined from the table.
+- The script will be such that just the Country Name will be extracted.
+3. QS Citations per paper
+- You can get the QS Citations per paper by college from the table.
+4. QS Academic Reputation
+- You can get the QS Academic Reputation by college from the table.
+5. QS Employer Reputation
+- You can get the QS Employer Reputation by college from the table.
+
+### THE
+This is Times Higher Education. Specifically, we filter by Computer Science since we are interested in tech degrees. We want to extract five main things.
+
+1. University
+- You can get the University Name from the table .
+2. Country
+- You can get the Country and City Name combined from the table.
+- The script will be such that just the Country Name will be extracted.
+3. Citations
+- You can get the Citations per paper by college from the table.
+4. Research
+- You can get the Research by college from the table.
+5. Teaching
+- You can get the Teaching by college from the table.
+
+### Shanghai
+This is Shanghai Rankings. Specifically, we filter by Computer Science and Engineering since we are interested in tech degrees. We want to extract three main things.
+
+1. University
+- You can get the University Name from the table .
+2. CNCI
+- You can get the CNCI from the table.
+3. TOP
+- You can get the TOP from the table.
+
 ## Data Extraction + Preparation Pipeline
 This section outlines the existing + planned pipeline to automatically extract and prepare the above 2 data sources for visualization in Tableau.
 
@@ -35,6 +75,11 @@ This section outlines the existing + planned pipeline to automatically extract a
 1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the BG data.
 2. The BG data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### QS, THE, SHANGHAI
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, as well as, combines the three scripts and calculates an overall combined score data.
+2. The overall combined score data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
 
 ## Technical Details
 ### Deploying to AWS Lambda
