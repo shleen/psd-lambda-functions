@@ -15,7 +15,20 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+# define wait times for webscrape to run
+def wait():
+    time.sleep(3)
+def long_wait():
+    time.sleep(5)
 
+# click on accept cookies button
+def close_cookie(driver):
+    try:
+        close_btn = driver.find_element(By.XPATH, "//div[@class='eu-cookie-compliance-buttons']")
+        close_btn.click()
+        wait()
+    except:
+        print("Cookie button not found")
 
 def handler(event=None, context=None):
     options = webdriver.ChromeOptions()
@@ -34,10 +47,15 @@ def handler(event=None, context=None):
     options.add_argument("--remote-debugging-port=9222")
     chrome = webdriver.Chrome("/opt/chromedriver", options=options)
     chrome.get("https://www.topuniversities.com/university-rankings/university-subject-rankings/{year}/computer-science-information-systems?&tab=indicators&sort_by=overallscore&order_by=desc")
+    chrome.maximize_window()
+    long_wait()
+    close_cookie(chrome)
     data = chrome.find_elements(By.XPATH, "//*[@class='td-wrap-in']")
+    long_wait()
+    print(len(data))
+    
     # for i in range(len(data)):
     #     print(i, data[i].text)
-    # return "YAY"
     print("hello world")
 
 # def handler(event=None, context=None):
