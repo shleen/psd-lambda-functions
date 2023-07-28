@@ -98,18 +98,18 @@ We are currently extracting these data points:
 3. URL
     - Used to check if it is the correct company, should we find any inconsistencies
 with other rows
-1. Total Funding
+4. Total Funding
     - Funding/Investment amount
-2. Description
+5. Description
     - Used to check if it is the correct company in terms of what they do
-3. Total Headcount
+6. Total Headcount
     - Potential future datapoint in seeing where the tech talent are going, and if
 there are any emerging companies/industries
-1. Country
-2. Sector
-3.  Industry
-4.  Sub-Industry
-5.  Latest Valuation
+7. Country
+8. Sector
+9. Industry
+10. Sub-Industry
+11. Latest Valuation
 
 CB Insights groups campanies under Sector, Industry and Sub-Industry, with each being 
 more detailed than the previous. 
@@ -127,9 +127,10 @@ As you go down into Industry/Sub-Industry, the companies will be more specifical
 
 ### MOM Recruitment and Resignation Rate
 This data is taken directly from the Ministry of Manpower (MOM) website 
-([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). It comprises 
-of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this 
-data is:
+([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). 
+The current "API" call for this script goes into the link and accesses the public URL for the file and may not work in the future. 
+However, the link earlier is of the original public page, and any updates should be able to be accessed from there. 
+It comprises of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this data is:
 
 1. **Recruitment Rate**: The recruitment rate is useful as another data source to 
 compare for output of tech talent.
@@ -146,28 +147,43 @@ This section outlines the existing + planned pipeline to automatically extract a
 4. (Planned) Move the 'MPS Template' file into some previously decided upon location, for Tableau to ultimately read in.
 
 ### BG
-1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the BG data.
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that pulls the BG data.
 2. The BG data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
 ### US BLS
-1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the US BLS data.
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that pulls the US BLS data.
 2. The US BLS data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
 ### QS, THE, SHANGHAI
-1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, as well as, combines the three scripts and calculates an overall combined score data.
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, 
+as well as, combines the three scripts and calculates an overall combined score data.
 2. The overall combined score data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
 
 ### OECD
-details to be udpated
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python API call that will extract the OECD data.
+2. The OECD data will be cleaned.
+3. The final csv file with the clean data will be sent as an attachment via email.
 
 ### CB Insights
-details to be udpated
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the company data from CB Insights.
+2. The CB Insights data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
 
 ### MOM Recruitment and Resignation Rate
-details to be udpated
+Process for both Recruitment and Resignation Rate is the same: 
+
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python "API" call from a public URL that will extract the MOM data.
+2. The MOM data will be cleaned and the relevant rows will be stored in a file. 
+3. The final csv file with the clean data will be sent as an attachment via email.
+
 
 ## Technical Details
 ### Deploying to AWS Lambda
@@ -177,14 +193,14 @@ If you require Selenium, you're gonna have to create a Docker container and depl
     a. Type `which npm` to check the location of node. 
     b. Type `npm` to ensure that your WSL/Linux system is able to access node. 
     c. If there are any issues, update your WSL from 1 to 2 (or the latest version).
-1. Navigate to [this](https://github.com/shleen/psd-lambda-functions) GitHub repository and clone the `template` folder.
-2. Edit the `handler` function in `main.py` to include your code.
-3. Edit `Dockerfile` after Line 15 to include `pip install` lines for all the packages your script requires.
-4. Edit `serverless.yml`. Specifically, lines 2, 3, and 16.
-4. (For first-time users) Set up `serverless`. To do  this, run `npm install -g serverless`. Then, configure serverless with your AWS credentials by running `serverless config credentials --provider aws --key <AWS_ACCESS_KEY> --secret <AWS_SECRET_KEY> -o`.
-5. `cd` into the folder with your Lambda function
-6. Run `sls deploy`
-7. To invoke the function, run `sls invoke --function function_name`. The `function_name` here is what you set on line 16 from step 4 above.
+2. Navigate to [this](https://github.com/shleen/psd-lambda-functions) GitHub repository and clone the `template` folder.
+3. Edit the `handler` function in `main.py` to include your code.
+4. Edit `Dockerfile` after Line 15 to include `pip install` lines for all the packages your script requires.
+5. Edit `serverless.yml`. Specifically, lines 2, 3, and 16.
+6. (For first-time users) Set up `serverless`. To do  this, run `npm install -g serverless`. Then, configure serverless with your AWS credentials by running `serverless config credentials --provider aws --key <AWS_ACCESS_KEY> --secret <AWS_SECRET_KEY> -o`.
+7. `cd` into the folder with your Lambda function
+8. Run `sls deploy`
+9. To invoke the function, run `sls invoke --function function_name`. The `function_name` here is what you set on line 16 from step 4 above.
 
 ## Footnotes
 1&nbsp; We work with 5D SSOCs - 5-digit numerical codes that correspond to an occupation. For this report, Burning Glass only takes 4D SSOCs. This means that one 'dimension' of occupations are lost. i.e. SSOCs 12222 and 12223 refer to separate but similar occupations. The 4D SSOC 1222 will encapsulate both 12222 and 12223. This is a known limitation of Burning Glass and is something that has to be worked around.
