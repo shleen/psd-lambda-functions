@@ -274,6 +274,9 @@ def handler(event=None, context=None):
     for d in dirs:
         shutil.rmtree(os.path.join(root, d))
 
+  # Print version
+  print("Occupation Analysis V1")
+
   # Print size of files in temp folder
   size = 0
   Folderpath = '/tmp'
