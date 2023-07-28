@@ -198,7 +198,7 @@ If you require Selenium, you're gonna have to create a Docker container and depl
 5. Edit `serverless.yml`. Specifically, lines 2, 3, and 16.
 6. (For first-time users) Set up `serverless`. To do  this, run `npm install -g serverless`. Then, configure serverless with your AWS credentials by running `serverless config credentials --provider aws --key <AWS_ACCESS_KEY> --secret <AWS_SECRET_KEY> -o`.
 7. `cd` into the folder with your Lambda function
-8. Run `sls deploy`
+8. Run `sls deploy --function function_name`
 9. To invoke the function, run `sls invoke --function function_name`. The `function_name` here is what you set on line 16 from step 4 above.
 
 ## Footnotes
