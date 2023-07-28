@@ -176,7 +176,6 @@ This recipe will trigger an AWS Lambda function that will run a Selenium script 
 2. The CB Insights data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
-
 ### MOM Recruitment and Resignation Rate
 Process for both Recruitment and Resignation Rate is the same: 
 
