@@ -2,6 +2,31 @@
 # This script extracts 16 datasets from United States Bureau of Labor Statistics
 # Link: https://data.bls.gov/oes/#/home
 
+"""
+This folder contains the Selenium script used to scrape the US BLS website. About the US BLS Website:
+The Bureau of Labor Statistics is a unit of the United States Department of Labor. It is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics and serves as a principal agency of the U.S. Federal Statistical System
+In particular, the Occupational Employment and Wage Statistics section of the US BLS data contains the following data:
+1.	Employment
+2.	Employment Percent Relative Standard Error
+3.	Hourly Mean Wage
+4.	Annual Mean Wage
+5.	Wage Percent Relative Standard Error
+6.	Hourly 10th Percentile Wage
+7.	Hourly 25th Percentile Wage
+8.	Hourly Median Wage
+9.	Hourly 75th Percentile Wage
+10.	Hourly 90th Percentile Wage
+11.	Annual 10th Percentile Wage
+12.	Annual 25th Percentile Wage
+13.	Annual Median Wage
+14.	Annual 75th Percentile Wage
+15.	Annual 90th Percentile Wage
+16.	Sectoral Breakdown of Employment by Occupation
+For our Policy Questions, we are interested to extract the aforementioned data for tech occupations in the US across all industries. These questions could incorporate the following:
+1.	Demand/Vacancies for Tech Occupations with respect to US
+2.	Which sectors have the highest employment of tech occupations
+"""
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time

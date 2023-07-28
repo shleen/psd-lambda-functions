@@ -1,3 +1,7 @@
+# Motivation: The data extracted from LabourInsights regard skills on the demand-side. This can be contrasted with skills on the supply-side (e.g. what 
+# skills do the graduates coming out of University possess), allowing us to determine the skill gap. The SSOC data that we are extracting from are the SSOCs of 
+# identified tech jobs that are indicative of the hiring tech landscape in Singapore. These SSOCs are obtained from the manpower survey.
+
 # This script is currently deployed on AWS Lambda. It's purpose is to scrape "Occupation Analysis" information from LabourInsights (Burning Glass)
 # and to upload it on Amazon S3 as an Excel file -- object storage service that stores data as objects.
 # To call/invoke this script, we use a Workato recipe with a scheduler trigger. At the indicated timing or frequency, this script would be ran on AWS
@@ -160,6 +164,7 @@ def get_occupation_analysis(driver, actions, wait):
         file_name = "Occupation Analysis.xlsx"
         file_path = "/tmp/" + file_name
 
+        # A low-level client representing Amazon Simple Storage Service (S3)
         s3_client = boto3.client('s3')
         
         # To ensure there is sufficient download time, up to 20s. 
@@ -217,12 +222,13 @@ def consolidate_occupation_analysis_skills():
     # Read 'Occupation Analysis' report
     skill_sheet = pd.read_excel('/tmp/' + file, 'Skills', skiprows=7)
 
-    # Add 'SSOC' column by extracting the ssoc from the filename
+    # Add 'SSOC' column by extracting the ssoc from the filename. [-9:-5] refers to the last few characters of the file name that corresponds to the SSOC number.
     skill_sheet['SSOC'] = file[-9:-5]
 
     # Drop 'Salary Premium' column
     skill_sheet.drop(labels=['Salary Premium'], axis=1, inplace=True)
 
+    # Else, go into append mode to add the skill sheet of each SSOC
     if not os.path.isfile('/tmp/Occupation Analysis Skills.csv'):
       skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv', header=True)
     else:

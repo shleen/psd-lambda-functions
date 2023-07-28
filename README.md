@@ -1,11 +1,11 @@
-# Documentation - MPS + BG
-This page details the work done by Sheline to extract, clean, and process the MPS and BG data sources.
+# Documentation  
+This page details the work done by IMDA PSD Interns (Sheline, Benedict, Aarthi, Anir, Vania, Fuwen) to extract, clean, and process all the data sources for the final dashboard.
 
 ## Windows Users
 If you are using a Windows Machine, you need to use the Windows Subsystem for Linux (WSL). 
 ## Data Sources
 ### MPS
-This is the IMDA Manpower Survey. It is administered by IMDA annually, and collates data points like employment and vacancy numbers, and a variety of other numbers.
+This is the IMDA Manpower Survey. It is administered by IMDA annually and collates data points like employment and vacancy numbers, and a variety of other numbers.
 
 Ideally, we want the 'Employment' and 'Vacancy' columns from the 'EmpVacDmd' sheet in the MPS Excel workbook to be fed into Tableau. To do that, we need to
 
@@ -22,6 +22,120 @@ This is Burning Glass. Specifically, we use the Labour Insight dashboard made by
     - You can find this at Create Reports > Focus on - Time Series Analysis
     - We use this report to get the number of job postings on a monthly basis for each SSOC that we're tracking. These numbers give us a sense of the industry's demand for each occupation.
 
+### United States Bureau of Labour Statistics
+The Bureau of Labor Statistics is a unit of the United States Department of Labor. It is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics and serves as a principal agency of the U.S. Federal Statistical System.
+
+In particular, We intend to incorporate the following as part of our policy questions:
+1.	Demand/Vacancies for Tech Occupations with respect to US
+2.	Which sectors have the highest employment of tech occupations
+
+### QS
+This is Quacquarelli Symonds Rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
+
+1. University
+- You can get the University Name from the table .
+2. Country
+- You can get the Country and City Name combined from the table.
+- The script will be such that just the Country Name will be extracted.
+3. QS Citations per paper
+- You can get the QS Citations per paper by college from the table.
+4. QS Academic Reputation
+- You can get the QS Academic Reputation by college from the table.
+5. QS Employer Reputation
+- You can get the QS Employer Reputation by college from the table.
+
+### THE
+This is Times Higher Education. Specifically, we filter by Computer Science since we are interested in tech degrees. We want to extract five main things.
+
+1. University
+- You can get the University Name from the table .
+2. Country
+- You can get the Country and City Name combined from the table.
+- The script will be such that just the Country Name will be extracted.
+3. Citations
+- You can get the Citations per paper by college from the table.
+4. Research
+- You can get the Research by college from the table.
+5. Teaching
+- You can get the Teaching by college from the table.
+
+### Shanghai
+This is Shanghai Rankings. Specifically, we filter by Computer Science and Engineering since we are interested in tech degrees. We want to extract three main things.
+
+1. University
+- You can get the University Name from the table .
+2. CNCI
+- You can get the CNCI from the table.
+3. TOP
+- You can get the TOP from the table.
+
+### OECD
+This is Organisation for Economic Co-operation and Development. It comprises of the 
+data from various country members. Specifically, we get the Employment by Activities 
+(ISIC Rev 4) for the list of countries we are interested in. We get the employment 
+numbers of the Information and Commuication sectors/industries of these countries for 
+every year, starting from 2008 to the present year/the most updated year.
+
+We are only extracting employment numbers from the Infocomm sectors/industries from 
+these countries, which can used to look at the trends over time for employment numbers 
+and be used to compare versus Singapore's employment trends. 
+
+### CB Insights
+CB Insights is a private company with a business analytics platform and global 
+database that provides market intelligence on private companies and investor 
+activities. The platform is targeted at private equity, venture capital, investment 
+banking, angel investing, and consulting professionals by providing insights about 
+high growth private companies. 
+
+Fun Fact: CB stands for ChubbyBrain 
+[link](https://www.cbinsights.com/research/team-blog/cb-cb-insights-stand-for/)
+
+We are currently extracting these data points: 
+
+1. Search Input  
+    - Used to check if we are searching for the correct items
+2. Company Name
+3. URL
+    - Used to check if it is the correct company, should we find any inconsistencies
+with other rows
+1. Total Funding
+    - Funding/Investment amount
+2. Description
+    - Used to check if it is the correct company in terms of what they do
+3. Total Headcount
+    - Potential future datapoint in seeing where the tech talent are going, and if
+there are any emerging companies/industries
+1. Country
+2. Sector
+3.  Industry
+4.  Sub-Industry
+5.  Latest Valuation
+
+CB Insights groups campanies under Sector, Industry and Sub-Industry, with each being 
+more detailed than the previous. 
+
+We are currently only pulling data from 6 Sectors:
+
+1. Computer Hardware & Services
+2. Electronics
+3. Media (Traditional)
+4. Internet
+5. Mobile & Telecommunications
+6. Software (non-internet/mobile)
+
+As you go down into Industry/Sub-Industry, the companies will be more specifically classified and this is a potential area to explore in the future. 
+
+### MOM Recruitment and Resignation Rate
+This data is taken directly from the Ministry of Manpower (MOM) website 
+([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). It comprises 
+of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this 
+data is:
+
+1. **Recruitment Rate**: The recruitment rate is useful as another data source to 
+compare for output of tech talent.
+2. **Resignation rate**: The resignation rate is useful to compare and see if there is 
+a higher than normal resignation rate for the Infocomm sector. 
+
 ## Data Extraction + Preparation Pipeline
 This section outlines the existing + planned pipeline to automatically extract and prepare the above 2 data sources for visualization in Tableau.
 
@@ -34,8 +148,26 @@ This section outlines the existing + planned pipeline to automatically extract a
 ### BG
 1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the BG data.
 2. The BG data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered with the new file gets uploaded onto S3. This recipe will download the file.
-4. This file will be automatically sent as an attachment to an email to your email<sup>5</sup>.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### US BLS
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the US BLS data.
+2. The US BLS data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### QS, THE, SHANGHAI
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, as well as, combines the three scripts and calculates an overall combined score data.
+2. The overall combined score data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
+
+### OECD
+details to be udpated
+
+### CB Insights
+details to be udpated
+
+### MOM Recruitment and Resignation Rate
+details to be udpated
 
 ## Technical Details
 ### Deploying to AWS Lambda
