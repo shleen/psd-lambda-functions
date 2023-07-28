@@ -14,6 +14,10 @@ provider:
       occupation_analysis_img:
         path: ./bg_occupation_analysis/
         platform: linux/amd64
+      uni_rankings_img:
+        path: ./uni_rankings/
+        platform: linux/amd64
+      
 
 functions:
   # lambda function name used for invoke
@@ -29,3 +33,46 @@ functions:
     memorySize: 2048
     image:
       name: occupation_analysis_img
+  uni_rankings:
+    timeout: 60
+    # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+    memorySize: 2048
+    image:
+      name: uni_rankings_img
+
+
+
+# org: vaniahalim
+# app: extract-uni
+# service: extract-uni
+
+# provider:
+#   name: aws
+#   stage: ${opt:stage, 'prod'}
+#   region: ${env:AWS_REGION, 'ap-southeast-1'}
+#   ecr:
+#     images:
+#       img:
+#         path: ./
+#         platform: linux/amd64
+
+
+# # service: docker-selenium-lambda
+
+# # provider:
+# #   name: aws
+# #   stage: ${opt:stage, 'prod'}
+# #   region: ${env:AWS_REGION, 'us-east-1'}
+# #   ecr:
+# #     images:
+# #       img:
+# #         path: ./
+# #         platform: linux/amd64
+
+# functions:
+#   demo:
+#     timeout: 60
+#     # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+#     memorySize: 2048
+#     image:
+#       name: img
