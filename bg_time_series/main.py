@@ -230,7 +230,6 @@ def handler(event=None, context=None):
   start = time.time()
   load_dotenv()
   
-  # try:
   options = webdriver.ChromeOptions()
   options.binary_location = '/opt/chrome/chrome'
   options.add_argument('--headless')
@@ -252,18 +251,33 @@ def handler(event=None, context=None):
   options.add_experimental_option("prefs", prefs)
   driver = webdriver.Chrome("/opt/chromedriver", options=options)
 
-  wait = WebDriverWait(driver, 30)
-  login(driver, wait)
+  # Delete contents of temp folder
+  for root, dirs, files in os.walk('/tmp'):
+    for f in files:
+        os.unlink(os.path.join(root, f))
+    for d in dirs:
+        shutil.rmtree(os.path.join(root, d))
 
+  # Print size of files in temp folder
+  size = 0
+  Folderpath = '/tmp'
+  for path, dirs, files in os.walk(Folderpath):
+    for f in files:
+      fp = os.path.join(path, f)
+      size += os.stat(fp).st_size
+  print("Folder size: " + str(size))
+
+  wait = WebDriverWait(driver, 30)
+
+  # Call the functions defined above
+  login(driver, wait)
   get_time_series(driver, wait)
   consolidate_time_series_analysis()
 
-  # except Exception as e:
-  #   print("Exception occured: ", e)
-
+  # Print total time elapsed
   end = time.time()
   time_elapsed = end - start
   print('Time elapsed: {}s'.format(time_elapsed))
 
-# Uncomment for docker testing, comment for AWS lambda testing
-handler()
+# Uncomment for docker testing, comment for AWS lambda testing -- because AWS will call handler by default
+# handler()
