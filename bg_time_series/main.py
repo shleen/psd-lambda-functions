@@ -231,7 +231,7 @@ def handler(event=None, context=None):
   load_dotenv()
   
   options = webdriver.ChromeOptions()
-  # options.binary_location = '/opt/chrome/chrome'
+  options.binary_location = '/opt/chrome/chrome'
   options.add_argument('--headless')
   options.add_argument('--no-sandbox')
   options.add_argument("--disable-gpu")
@@ -249,7 +249,7 @@ def handler(event=None, context=None):
           "download.prompt_for_download": False,
           "directory_upgrade": True}
   options.add_experimental_option("prefs", prefs)
-  driver = webdriver.Chrome(options=options)
+  driver = webdriver.Chrome("/opt/chromedriver", options=options)
 
   # Delete contents of temp folder
   for root, dirs, files in os.walk('/tmp'):
