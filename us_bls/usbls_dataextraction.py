@@ -40,7 +40,7 @@ step1_xpath = "/html/body/div[2]/div/div/div[4]/div/div[2]/div[2]/div/div/div/fi
 # Select One Occupation for Multiple Industries
 
 # List of required XPaths for step 2
-# Each XPath Corresponds to Each Tech Occupation
+# Each XPath Corresponds to Each Tech Occupation, such as Computer and Information Systems Manager
 
 
 step2_xpaths = [
