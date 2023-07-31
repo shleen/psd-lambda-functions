@@ -234,6 +234,7 @@ def consolidate_occupation_analysis_skills():
     else:
       skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv', mode='a', header=False)
   
+  # Upload and save the Excel file as 'Occupation Analysis Skills.csv' on S3
   s3_client = boto3.client('s3')
   s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', 'Occupation Analysis Skills.csv')
 
