@@ -37,8 +37,10 @@ print(driver.title)
 
 # XPath patterns for each step
 step1_xpath = "/html/body/div[2]/div/div/div[4]/div/div[2]/div[2]/div/div/div/fieldset/label[4]/input"
+# Select One Occupation for Multiple Industries
 
 # List of required XPaths for step 2
+# Each XPath Corresponds to Each Tech Occupation
 
 
 step2_xpaths = [
@@ -65,6 +67,15 @@ step2_xpaths = [
 ]
 
 # XPath patterns for the rest of the steps
+
+# Step 3: To Select All Sectors in this list
+# Step 4: To Select the Button Next
+# Step 5: To Select All Industries in this list
+# Step 6: To Select the Button Next
+# Step 7: To Select All Data Types (Refer to Lines 9 - 24 for further details)
+# Step 8: To Select the Button Next
+# Step 9: To Select Output Format as Excel
+# Step 10: To Select the Button Submit
 step3_xpath = "/html/body/div[2]/div/div/div[4]/div/div[2]/div[2]/div/div/div[1]/div[3]/div[3]/div/div/div/div[4]/select/option[1]"
 step4_xpath = "/html/body/div[2]/div/div/div[4]/div/div[2]/div[2]/div/div/div[1]/div[3]/div[3]/div/div/div/div[4]/button"
 step5_xpath = "/html/body/div[2]/div/div/div[4]/div/div[2]/div[2]/div/div/div[1]/div[3]/div[4]/div/div/div/div[3]/div[2]/ul/li/div/div[1]/ul/li[1]/div/span[2]/input"
