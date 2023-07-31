@@ -45,8 +45,9 @@ def login(driver, wait):
   login_button = driver.find_element(By.ID, "submit")
   login_button.click()
 
-
+# To download Excel sheet of 'Time Series' for each SSOC
 def get_time_series(driver, wait):
+  # Different Selenium actions to click buttons/menus and to input different values
   driver.find_element(By.XPATH,
                       '//a[contains(text(), "Create Reports")]').click()
 
@@ -77,14 +78,13 @@ def get_time_series(driver, wait):
       t1 = time.time()
       
       try:
-        # FIXME: use wait until clickable
         wait.until(
           EC.element_to_be_clickable(
             (By.XPATH, '//input[@id="JTAndOccsOnetCode"]')))
 
         ssoc_input = driver.find_element(By.XPATH,
                                         '//input[@id="JTAndOccsOnetCode"]')
-        ssoc_input.click()  # give focus
+        ssoc_input.click()
 
         ssoc_input.send_keys(ssoc)
 
@@ -92,14 +92,14 @@ def get_time_series(driver, wait):
         driver.find_element(By.XPATH, f'//a[contains(text(), "{ssoc}")]').click()
         time.sleep(1)
 
-        # add to list
+        # Add SSOC to list
         add_button = driver.find_element(By.XPATH,
                                         '//button[@id="btn-add-soccode"]')
         add_button.click()
 
         try:
           driver.find_element(By.XPATH, '//button[@id="showReport"]').click()
-          ##################### CHANGE SLEEP
+
           time.sleep(3)
 
           driver.find_element(
@@ -117,31 +117,29 @@ def get_time_series(driver, wait):
           driver.find_element(
             By.XPATH,
             '//div[@id="liveSeriesSubPopupDataOccupation00"]/ul/li[2]').click()
-          ##################### CHANGE SLEEP
+
           time.sleep(2)
 
-          # driver.save_screenshot('BeforeClickAnnually.png')
           s3_client = boto3.client('s3')
-          # s3_client.upload_file('BeforeClickAnnually.png', 'psd-dashboard-data', 'BeforeClickAnnually.png')
 
           driver.find_element(By.XPATH,
                               '//span[contains(text(), "Annually")]').click()
           
+          # Debug technique: Screenshot testing because of headless chrome
           # driver.save_screenshot('AfterClickAnnually.png')
           # s3_client.upload_file('AfterClickAnnually.png', 'psd-dashboard-data', 'AfterClickAnnually.png')          
           
           try:
-            # make "monthly" button red to see if the ID is correct. turns out index starts from 1
+            # Debug technique: Make "monthly" button red to see if the ID is correct
             # element = driver.find_element(
             #   By.XPATH, '//div[@id="liveSeriesIntervalPopup0"]/ul/li[2]')
             # driver.execute_script("arguments[0].setAttribute('style', 'background-color:DodgerBlue')", element)
+            
             driver.find_element(
-              # html starts from 1
+              # HTML starts from 1
               By.XPATH, '//div[@id="liveSeriesIntervalPopup0"]/ul/li[2]').click()
+            
             time.sleep(3)
-
-            # driver.save_screenshot('AfterClickMonthly.png')
-            # s3_client.upload_file('AfterClickMonthly.png', 'psd-dashboard-data', 'AfterClickMonthly.png')
 
           except Exception as e:
             print(e)
@@ -149,7 +147,6 @@ def get_time_series(driver, wait):
           driver.find_element(By.XPATH,
                               '//button[@id="ParameterUpdateButton"]').click()
           
-        # FIXME: delete time sleep and test if it breaks
         time.sleep(3)
 
         wait.until(
@@ -170,27 +167,33 @@ def get_time_series(driver, wait):
         if 'expanded' not in occupation_accordion.get_attribute('class'):
           occupation_accordion.click()
 
-        # FIXME: if wait until clickable above works, change this back to 1
         time.sleep(2)
         driver.find_element(By.XPATH, '//a[text()="SSOC Occupations"]').click()
 
         driver.find_element(By.XPATH, '//span[@class="combineImgText"]').click()
 
         file_path = '/tmp/Time Series Analysis.xlsx'
+        
+        # To ensure there is sufficient download time, up to 20s. 
         time_counter = 0
+        # Searching in the /tmp folder
         while not os.path.exists(file_path):
           time.sleep(1)
           time_counter += 1
           if time_counter > 20:
             break
         
+        # Saving and moving file so that there are no duplicate names
         new_file_name = "Time Series Analysis_ssoc_" + str(ssoc) + ".xlsx"
         new_file_path = os.path.join('/tmp', new_file_name)
         shutil.move(file_path, new_file_path)
+      
+      # To log back in when kicked out
       except ElementClickInterceptedException:
-        # for when kicked out
         login(driver, wait)
         continue
+
+      # Print time elapsed for each SSOC
       t2 = time.time()
       time_passed = t2 - t1
       print('Time passed: {}s'.format(time_passed))
