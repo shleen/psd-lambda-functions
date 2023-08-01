@@ -32,11 +32,11 @@ from selenium.webdriver.common.keys import Keys
 # List of SSOCs to extract data from
 SSOCs = [
   1221, 1222, 
-  1330, 1349, 2122, 2123, 2152, 2153, 
-  2166, 2431, 2433, 2511, 2512, 2514, 2515, 2519, 
-  2521, 2522, 2523, 2524, 2529, 2641, 2642, 2651, 
-  2654, 2656, 3114, 3440, 3511, 3512, 3514, 3521, 
-  3522, 3523, 3620, 4132, 4315, 5142, 7421, 7422
+  # 1330, 1349, 2122, 2123, 2152, 2153, 
+  # 2166, 2431, 2433, 2511, 2512, 2514, 2515, 2519, 
+  # 2521, 2522, 2523, 2524, 2529, 2641, 2642, 2651, 
+  # 2654, 2656, 3114, 3440, 3511, 3512, 3514, 3521, 
+  # 3522, 3523, 3620, 4132, 4315, 5142, 7421, 7422
 ]
 
 # Automate the login process. It is defined as a stand-alone function because we want to call the login function when there is a force logout on LabourInsights
@@ -234,8 +234,10 @@ def consolidate_occupation_analysis_skills():
     else:
       skill_sheet.to_csv('/tmp/Occupation Analysis Skills.csv', mode='a', header=False)
   
+  # Upload and save the Excel file as 'Occupation Analysis Skills.csv' on S3
   s3_client = boto3.client('s3')
-  s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', 'Occupation Analysis Skills.csv')
+  # s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', 'Occupation Analysis Skills.csv')
+  s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', f'Occupation Analysis Skills {int(time.time())}.csv')
 
 # AWS Lambda calls the handler() function by default. The functions that we want to invoke must be in order in handler(). Thus, we don't need to call handler() in
 # AWS Lambda, but we have to when testing in Docker (because Docker does not call handler() by default).
