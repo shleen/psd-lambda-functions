@@ -1,4 +1,4 @@
-# import boto3
+import boto3
 import os
 import pandas as pd
 import shutil
@@ -76,7 +76,8 @@ def setup_the(year):
 ################################################################################################
 ################################################################################################
 def handler(event=None, context=None):
-   
+    load_dotenv()
+    
     """""""""""""""""""""""""""""
     THE
     """""""""""""""""""""""""""""
@@ -126,5 +127,10 @@ def handler(event=None, context=None):
     df_the["Teaching"] = teaching_data
 
     print(df_the)
+
+    # Upload to S3
+    df_the.to_csv("/tmp/the_scrape.csv")
+    s3_client = boto3.client('s3')
+    s3_client.upload_file("/tmp/the_scrape.csv", "psd-dashboard-data", f"the_scrape {int(time.time())}.csv")
    
-# handler()
+handler()

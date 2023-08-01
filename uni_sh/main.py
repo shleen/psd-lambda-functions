@@ -1,4 +1,4 @@
-# import boto3
+import boto3
 import os
 import pandas as pd
 import shutil
@@ -70,7 +70,7 @@ def extract_names(driver):
         try:
             next_page_button = driver.find_element(By.XPATH, '//li[@title="下一页"]')
             if next_page_button.get_attribute('aria-disabled') == 'true':
-                print("Next Page button is not clickable. Stopping loop.")
+                # print("Next Page button is not clickable. Stopping loop.")
                 break
             next_page_button.click()
             wait()
@@ -95,7 +95,7 @@ def extract_cnci(driver):
         try:
             next_page_button = driver.find_element(By.XPATH, '//li[@title="下一页"]')
             if next_page_button.get_attribute('aria-disabled') == 'true':
-                print("Next Page button is not clickable. Stopping loop.")
+                # print("Next Page button is not clickable. Stopping loop.")
                 break
             next_page_button.click()
             wait()
@@ -120,7 +120,7 @@ def extract_top(driver):
         try:
             next_page_button = driver.find_element(By.XPATH, '//li[@title="下一页"]')
             if next_page_button.get_attribute('aria-disabled') == 'true':
-                print("Next Page button is not clickable. Stopping loop.")
+                # print("Next Page button is not clickable. Stopping loop.")
                 break
             next_page_button.click()
             wait()
@@ -170,7 +170,8 @@ def setup_sh(year):
 ################################################################################################
 ################################################################################################
 def handler(event=None, context=None):
-   
+    load_dotenv()
+
     """""""""""""""""""""""""""""
     SH
     """""""""""""""""""""""""""""
@@ -207,4 +208,9 @@ def handler(event=None, context=None):
 
     print(df_sh)
 
-# handler()
+    # Upload to S3
+    df_sh.to_csv("/tmp/sh_scrape.csv")
+    s3_client = boto3.client('s3')
+    s3_client.upload_file("/tmp/sh_scrape.csv", "psd-dashboard-data", f"sh_scrape {int(time.time())}.csv")
+
+handler()

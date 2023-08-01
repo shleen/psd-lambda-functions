@@ -34,27 +34,32 @@ functions:
     memorySize: 2048
     image:
       name: time_series_img
+
   occupation_analysis:
     timeout: 60
     # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
     memorySize: 2048
     image:
       name: occupation_analysis_img
+
   uni_qs:
     timeout: 60
     # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
     memorySize: 2048
     image:
       name: uni_qs_img
+
   uni_the:
     timeout: 60
     # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
     memorySize: 2048
     image:
+      name: uni_the_img
+      
   uni_sh:
     timeout: 60
     # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
     memorySize: 2048
     image:
-      name: uni_qs_img
+      name: uni_sh_img
 
