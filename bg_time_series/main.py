@@ -18,11 +18,12 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # List of SSOCs to extract data from
 SSOCs = [
-  1221, 1222, 1330, 1349, 2122, 2123, 2152, 2153, 
-  2166, 2431, 2433, 2511, 2512, 2514, 2515, 2519, 
-  2521, 2522, 2523, 2524, 2529, 2641, 2642, 2651, 
-  2654, 2656, 3114, 3440, 3511, 3512, 3514, 3521, 
-  3522, 3523, 3620, 4132, 4315, 5142, 7421, 7422
+  1221, 1222, 
+  # 1330, 1349, 2122, 2123, 2152, 2153, 
+  # 2166, 2431, 2433, 2511, 2512, 2514, 2515, 2519, 
+  # 2521, 2522, 2523, 2524, 2529, 2641, 2642, 2651, 
+  # 2654, 2656, 3114, 3440, 3511, 3512, 3514, 3521, 
+  # 3522, 3523, 3620, 4132, 4315, 5142, 7421, 7422
 ]
 
 # Automate the login process. It is defined as a stand-alone function because we want to call the login function when there is a force logout on LabourInsights
