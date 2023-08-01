@@ -1,4 +1,4 @@
-# import boto3
+import boto3
 import os
 import pandas as pd
 import shutil
@@ -106,6 +106,8 @@ def setup_qs(year):
 ################################################################################################
 ################################################################################################
 def handler(event=None, context=None):
+    load_dotenv()
+    
     """""""""""""""""""""""""""""
     QS
     """""""""""""""""""""""""""""
@@ -165,4 +167,9 @@ def handler(event=None, context=None):
     
     print(df_qs)
 
-# handler()
+    # Upload to S3
+    df_qs.to_csv("/tmp/qs_scrape.csv")
+    s3_client = boto3.client('s3')
+    s3_client.upload_file("/tmp/qs_scrape.csv", "psd-dashboard-data", f"qs_scrape {int(time.time())}.csv")
+
+handler()
