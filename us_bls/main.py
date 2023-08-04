@@ -2,7 +2,12 @@ import json
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.service import Service
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import time
+
+import shutil
 
 ### XPath patterns for each step
 
@@ -64,59 +69,92 @@ def click_element_by_xpath(driver, xpath):
     element.click()
     time.sleep(3)  # Add a short delay to allow the page to load
 
+# AWS Lambda calls the handler() function by default. The functions that we want to invoke must be in order in handler(). Thus, we don't need to call handler() in
+# AWS Lambda, but we have to when testing in Docker (because Docker does not call handler() by default). 
 def handler(event=None, context=None):
+    # driver = webdriver.Firefox("/opt/geckodriver", options=options)
+    # options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
 
-  options = webdriver.FirefoxOptions()
-  # TODO:
-  options.binary_location = '/opt/chrome/chrome'
+    options = Options()
+    # options = webdriver.FirefoxOptions()
+    print("failing before binary location")
+    
+    from selenium.webdriver.firefox.service import Service
 
-  driver = webdriver.Firefox()
-  driver.get("https://data.bls.gov/oes/#/home")
-  print(driver.title)
+    geckodriver_path = Service('/opt/firefox/firefox')
 
-  try:
-      # Loop through the XPaths for step 2 and complete the cycle
-      for i in range(len(step2_xpaths)):
-          driver.get("https://data.bls.gov/oes/#/home")
-          step2_xpath = step2_xpaths[i]
+    # FIXME: Think this is the issue? is it geckodriver or firefox here. think it should be firefox but something is wrong with teh downloadde firefox file
+    # options.binary_location = '/opt/firefox/firefox'
+    print("failing before driver")
+    
+    # binary = FirefoxBinary('/opt/firefox/firefox')
+    driver = webdriver.Firefox(service = geckodriver_path, options=options)
+    print("failing after driver")
 
-          # Click on elements for each step using the appropriate XPaths
-          click_element_by_xpath(driver, step1_xpath)
-          print("Step 1 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step2_xpath)
-          print(f"Step 2 (XPath {i+1}) done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step3_xpath)
-          print("Step 3 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step4_xpath)
-          print("Step 4 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step5_xpath)
-          print("Step 5 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step6_xpath)
-          print("Step 6 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step7_xpath)
-          print("Step 7 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step8_xpath)
-          print("Step 8 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step9_xpath)
-          print("Step 9 done")
-          time.sleep(3)
-          click_element_by_xpath(driver, step10_xpath)
-          print("Step 10 done")
-          time.sleep(3)
+    driver.get("https://data.bls.gov/oes/#/home")
+    print(driver.title)
 
-      # After completing all cycles, wait for the Excel data to download
-      time.sleep(3)
-      print("All excel data download is completed, thank you")
+    try:
+        # Loop through the XPaths for step 2 and complete the cycle
+        for i in range(len(step2_xpaths)):
+            driver.get("https://data.bls.gov/oes/#/home")
+            step2_xpath = step2_xpaths[i]
 
-  finally:
-      driver.close()
+            # Click on elements for each step using the appropriate XPaths
+            click_element_by_xpath(driver, step1_xpath)
+            print("Step 1 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step2_xpath)
+            print(f"Step 2 (XPath {i+1}) done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step3_xpath)
+            print("Step 3 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step4_xpath)
+            print("Step 4 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step5_xpath)
+            print("Step 5 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step6_xpath)
+            print("Step 6 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step7_xpath)
+            print("Step 7 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step8_xpath)
+            print("Step 8 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step9_xpath)
+            print("Step 9 done")
+            time.sleep(3)
+
+            click_element_by_xpath(driver, step10_xpath)
+            print("Step 10 done")
+            time.sleep(3)
+
+            # Rename and move file
+            file_path = '/tmp/OES_Report.xlsx'
+            new_file_name = "OES Report " + str(i) + ".xlsx"
+            new_file_path = os.path.join('/tmp', new_file_name)
+            shutil.move(file_path, new_file_path)
+
+        # After completing all cycles, wait for the Excel data to download
+        time.sleep(3)
+        print("All excel data download is completed, thank you")
+
+    finally:
+        driver.close()
 
 handler()
+
+
+
