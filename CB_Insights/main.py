@@ -180,45 +180,48 @@ def save_all_tables(df, company, driver, iterations=400, save=False):
         save_table(df, company, driver)
         count += 1
 
-df = pd.DataFrame(columns=data_column_names)
-sector_df = pd.DataFrame(columns=sector_columns)
+def handler(event=None, context=None):
+    df = pd.DataFrame(columns=data_column_names)
+    sector_df = pd.DataFrame(columns=sector_columns)
 
-lst_industries = ['Computer Hardware & Services', 
-                  'Electronics', 
-                  'Media (Traditional)', 
-                  'Internet', 
-                  'Mobile & Telecommunications', 
-                  'Software (non-internet/mobile)']
+    lst_industries = ['Computer Hardware & Services', 
+                    'Electronics', 
+                    'Media (Traditional)', 
+                    'Internet', 
+                    'Mobile & Telecommunications', 
+                    'Software (non-internet/mobile)']
 
-TIME_START = time.time()
+    TIME_START = time.time()
 
-driver = setup()
+    driver = setup()
 
-industries_dropdown_btn = driver.find_element(By.XPATH, "//button[@data-test='filter-section-open-Industries']")
-industries_dropdown_btn.click()
-wait()
-
-for industry in lst_industries:
-    industry_selector_btn = driver.find_element(By.XPATH, "//button[@data-test='tree-filter-popover-trigger-Industries']")
-    industry_selector_btn.click()
+    industries_dropdown_btn = driver.find_element(By.XPATH, "//button[@data-test='filter-section-open-Industries']")
+    industries_dropdown_btn.click()
     wait()
 
-    btn = driver.find_element(By.XPATH, f"//span[text()='{industry}']")
-    btn.click()
-    wait()
-    
-    save_sector_data(sector_df, industry, driver)
-    save_all_tables(df, industry, driver, iterations=400, save=True)
+    for industry in lst_industries:
+        industry_selector_btn = driver.find_element(By.XPATH, "//button[@data-test='tree-filter-popover-trigger-Industries']")
+        industry_selector_btn.click()
+        wait()
 
-    clear_industry_btn = driver.find_element(By.XPATH, "//button[@data-test='Industries-on-clear']")
-    clear_industry_btn.click()
-    wait()
+        btn = driver.find_element(By.XPATH, f"//span[text()='{industry}']")
+        btn.click()
+        wait()
+        
+        save_sector_data(sector_df, industry, driver)
+        save_all_tables(df, industry, driver, iterations=400, save=True)
 
-TIME_END = time.time()
-TIME_TAKEN = TIME_END - TIME_START
-print(f"Execution time: {TIME_TAKEN:.2f} seconds")
-print(sector_df)
-print(df)
+        clear_industry_btn = driver.find_element(By.XPATH, "//button[@data-test='Industries-on-clear']")
+        clear_industry_btn.click()
+        wait()
 
-time.sleep(10)
-driver.close()
+    TIME_END = time.time()
+    TIME_TAKEN = TIME_END - TIME_START
+    print(f"Execution time: {TIME_TAKEN:.2f} seconds")
+    print(sector_df)
+    print(df)
+
+    time.sleep(10)
+    driver.close()
+
+handler()
