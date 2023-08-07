@@ -1,0 +1,816 @@
+{
+  "service": {
+    "service": "extract-bg",
+    "serviceObject": {
+      "name": "extract-bg"
+    },
+    "provider": {
+      "name": "aws",
+      "stage": "prod",
+      "region": "ap-southeast-1",
+      "ecr": {
+        "images": {
+          "time_series_img": {
+            "path": "./bg_time_series/",
+            "platform": "linux/amd64"
+          },
+          "occupation_analysis_img": {
+            "path": "./bg_occupation_analysis/",
+            "platform": "linux/amd64"
+          },
+          "uni_qs_img": {
+            "path": "./uni_qs/",
+            "platform": "linux/amd64"
+          },
+          "uni_the_img": {
+            "path": "./uni_the/",
+            "platform": "linux/amd64"
+          },
+          "uni_sh_img": {
+            "path": "./uni_sh/",
+            "platform": "linux/amd64"
+          },
+          "us_bls_img": {
+            "path": "./us_bls/",
+            "platform": "linux/amd64"
+          }
+        }
+      },
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "TimeUnderscoreseriesLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/extract-bg-prod-time_series"
+            }
+          },
+          "OccupationUnderscoreanalysisLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/extract-bg-prod-occupation_analysis"
+            }
+          },
+          "UniUnderscoreqsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/extract-bg-prod-uni_qs"
+            }
+          },
+          "UniUnderscoretheLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/extract-bg-prod-uni_the"
+            }
+          },
+          "UniUnderscoreshLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/extract-bg-prod-uni_sh"
+            }
+          },
+          "UsUnderscoreblsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/extract-bg-prod-us_bls"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "extract-bg",
+                        "prod",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/extract-bg-prod*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/extract-bg-prod*:*:*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "extract-bg",
+                    "prod",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "EnterpriseLogAccessIamRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "AWS": "arn:aws:iam::802587217904:root"
+                    },
+                    "Action": "sts:AssumeRole",
+                    "Condition": {
+                      "StringEquals": {
+                        "sts:ExternalId": "ServerlessEnterprise-f82fdd57-4761-48d6-8807-70ce07b64443"
+                      }
+                    }
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "LogFilterAccess",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:FilterLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::GetAtt": [
+                              "TimeUnderscoreseriesLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "OccupationUnderscoreanalysisLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "UniUnderscoreqsLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "UniUnderscoretheLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "UniUnderscoreshLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "UsUnderscoreblsLogGroup",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "UsUnderscoreblsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:3ae8eed8feb44c7f58dbe2f9314691b166a0fed8c76a6935be03dec5410a5fb0"
+              },
+              "PackageType": "Image",
+              "FunctionName": "extract-bg-prod-us_bls",
+              "MemorySize": 2048,
+              "Timeout": 60,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UsUnderscoreblsLogGroup"
+            ]
+          },
+          "UsUnderscoreblsLambdaVersionSglCQyoFdTZdJwoqrZmIsTt2Zh42gYReO9ZJPwJc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UsUnderscoreblsLambdaFunction"
+              },
+              "CodeSha256": "3ae8eed8feb44c7f58dbe2f9314691b166a0fed8c76a6935be03dec5410a5fb0"
+            }
+          },
+          "TimeUnderscoreseriesLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:f702c74dd67cb06762bac44b3f01d7f0173860e259193d022f99b588f8ad9b21"
+              },
+              "PackageType": "Image",
+              "FunctionName": "extract-bg-prod-time_series",
+              "MemorySize": 2048,
+              "Timeout": 60,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "TimeUnderscoreseriesLogGroup"
+            ]
+          },
+          "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TimeUnderscoreseriesLambdaFunction"
+              },
+              "CodeSha256": "f702c74dd67cb06762bac44b3f01d7f0173860e259193d022f99b588f8ad9b21"
+            }
+          },
+          "UniUnderscoretheLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:3c71d230d72851b93ed957dd1461bf4d3d810faeaa40913e1110770b31aef014"
+              },
+              "PackageType": "Image",
+              "FunctionName": "extract-bg-prod-uni_the",
+              "MemorySize": 2048,
+              "Timeout": 60,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UniUnderscoretheLogGroup"
+            ]
+          },
+          "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UniUnderscoretheLambdaFunction"
+              },
+              "CodeSha256": "3c71d230d72851b93ed957dd1461bf4d3d810faeaa40913e1110770b31aef014"
+            }
+          },
+          "OccupationUnderscoreanalysisLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:ae020591f775f6fac45b9b28bc9050d4aa0043497c0e4a6e204a06d6ad96b4a1"
+              },
+              "PackageType": "Image",
+              "FunctionName": "extract-bg-prod-occupation_analysis",
+              "MemorySize": 2048,
+              "Timeout": 60,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "OccupationUnderscoreanalysisLogGroup"
+            ]
+          },
+          "OccupationUnderscoreanalysisLambdaVersionfshHAfOUwBx7JyI22XPUlGtj6aZv7Sale5jLvBFrFkc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "OccupationUnderscoreanalysisLambdaFunction"
+              },
+              "CodeSha256": "ae020591f775f6fac45b9b28bc9050d4aa0043497c0e4a6e204a06d6ad96b4a1"
+            }
+          },
+          "UniUnderscoreqsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:112cb5cd9edd93ccf4b7ec668913680ea4addf5d4be203036508d8bbdf9c69b3"
+              },
+              "PackageType": "Image",
+              "FunctionName": "extract-bg-prod-uni_qs",
+              "MemorySize": 2048,
+              "Timeout": 60,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UniUnderscoreqsLogGroup"
+            ]
+          },
+          "UniUnderscoreqsLambdaVersionPZIpJNp2bjRC32Kk8MspyQwwHZjXgyF0uTA4jwajc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UniUnderscoreqsLambdaFunction"
+              },
+              "CodeSha256": "112cb5cd9edd93ccf4b7ec668913680ea4addf5d4be203036508d8bbdf9c69b3"
+            }
+          },
+          "UniUnderscoreshLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:d5af23f75626f99079a69f6b0ee6587e5dfb3f2e6e91c6b2f7fc56323c24fc90"
+              },
+              "PackageType": "Image",
+              "FunctionName": "extract-bg-prod-uni_sh",
+              "MemorySize": 2048,
+              "Timeout": 60,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UniUnderscoreshLogGroup"
+            ]
+          },
+          "UniUnderscoreshLambdaVersionl6tSltz9ay4miruvFsw2hC9LVZKm9d9ybsQBBWotPs": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UniUnderscoreshLambdaFunction"
+              },
+              "CodeSha256": "d5af23f75626f99079a69f6b0ee6587e5dfb3f2e6e91c6b2f7fc56323c24fc90"
+            }
+          },
+          "CWLSubFilterTimeUnderscoreseriesLogGroupApSoutheast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "TimeUnderscoreseriesLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterOccupationUnderscoreanalysisLogGroupApSoutheast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "OccupationUnderscoreanalysisLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterUniUnderscoreqsLogGroupApSoutheast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "UniUnderscoreqsLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterUniUnderscoretheLogGroupApSoutheast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "UniUnderscoretheLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterUniUnderscoreshLogGroupApSoutheast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "UniUnderscoreshLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterUsUnderscoreblsLogGroupApSoutheast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "UsUnderscoreblsLogGroup"
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-ServerlessDeploymentBucketName"
+            }
+          },
+          "EnterpriseLogAccessIamRole": {
+            "Value": {
+              "Fn::GetAtt": [
+                "EnterpriseLogAccessIamRole",
+                "Arn"
+              ]
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-EnterpriseLogAccessIamRole"
+            }
+          },
+          "UsUnderscoreblsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UsUnderscoreblsLambdaVersionSglCQyoFdTZdJwoqrZmIsTt2Zh42gYReO9ZJPwJc"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-UsUnderscoreblsLambdaFunctionQualifiedArn"
+            }
+          },
+          "TimeUnderscoreseriesLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-TimeUnderscoreseriesLambdaFunctionQualifiedArn"
+            }
+          },
+          "UniUnderscoretheLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-UniUnderscoretheLambdaFunctionQualifiedArn"
+            }
+          },
+          "OccupationUnderscoreanalysisLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "OccupationUnderscoreanalysisLambdaVersionfshHAfOUwBx7JyI22XPUlGtj6aZv7Sale5jLvBFrFkc"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-OccupationUnderscoreanalysisLambdaFunctionQualifiedArn"
+            }
+          },
+          "UniUnderscoreqsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UniUnderscoreqsLambdaVersionPZIpJNp2bjRC32Kk8MspyQwwHZjXgyF0uTA4jwajc"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-UniUnderscoreqsLambdaFunctionQualifiedArn"
+            }
+          },
+          "UniUnderscoreshLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UniUnderscoreshLambdaVersionl6tSltz9ay4miruvFsw2hC9LVZKm9d9ybsQBBWotPs"
+            },
+            "Export": {
+              "Name": "sls-extract-bg-prod-UniUnderscoreshLambdaFunctionQualifiedArn"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "pluginsData": {},
+    "functions": {
+      "time_series": {
+        "timeout": 60,
+        "memorySize": 2048,
+        "image": {
+          "name": "time_series_img"
+        },
+        "events": [],
+        "name": "extract-bg-prod-time_series",
+        "package": {},
+        "memory": 2048,
+        "vpc": {},
+        "versionLogicalId": "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4"
+      },
+      "occupation_analysis": {
+        "timeout": 60,
+        "memorySize": 2048,
+        "image": {
+          "name": "occupation_analysis_img"
+        },
+        "events": [],
+        "name": "extract-bg-prod-occupation_analysis",
+        "package": {},
+        "memory": 2048,
+        "vpc": {},
+        "versionLogicalId": "OccupationUnderscoreanalysisLambdaVersionfshHAfOUwBx7JyI22XPUlGtj6aZv7Sale5jLvBFrFkc"
+      },
+      "uni_qs": {
+        "timeout": 60,
+        "memorySize": 2048,
+        "image": {
+          "name": "uni_qs_img"
+        },
+        "events": [],
+        "name": "extract-bg-prod-uni_qs",
+        "package": {},
+        "memory": 2048,
+        "vpc": {},
+        "versionLogicalId": "UniUnderscoreqsLambdaVersionPZIpJNp2bjRC32Kk8MspyQwwHZjXgyF0uTA4jwajc"
+      },
+      "uni_the": {
+        "timeout": 60,
+        "memorySize": 2048,
+        "image": {
+          "name": "uni_the_img"
+        },
+        "events": [],
+        "name": "extract-bg-prod-uni_the",
+        "package": {},
+        "memory": 2048,
+        "vpc": {},
+        "versionLogicalId": "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU"
+      },
+      "uni_sh": {
+        "timeout": 60,
+        "memorySize": 2048,
+        "image": {
+          "name": "uni_sh_img"
+        },
+        "events": [],
+        "name": "extract-bg-prod-uni_sh",
+        "package": {},
+        "memory": 2048,
+        "vpc": {},
+        "versionLogicalId": "UniUnderscoreshLambdaVersionl6tSltz9ay4miruvFsw2hC9LVZKm9d9ybsQBBWotPs"
+      },
+      "us_bls": {
+        "timeout": 60,
+        "memorySize": 2048,
+        "image": {
+          "name": "us_bls_img"
+        },
+        "events": [],
+        "name": "extract-bg-prod-us_bls",
+        "package": {},
+        "memory": 2048,
+        "vpc": {},
+        "versionLogicalId": "UsUnderscoreblsLambdaVersionSglCQyoFdTZdJwoqrZmIsTt2Zh42gYReO9ZJPwJc"
+      }
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.yml",
+    "initialServerlessConfig": {
+      "org": "fuwentay",
+      "app": "extract-bg",
+      "service": "extract-bg",
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      }
+    },
+    "app": "extract-bg",
+    "org": "fuwentay",
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": true,
+    "isDashboardAppPreconfigured": true,
+    "orgUid": "f82fdd57-4761-48d6-8807-70ce07b64443",
+    "appUid": "kn7Bq1Z0fT3wSYwlzl"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/extract-bg/prod/1691399903250-2023-08-07T09:18:23.250Z",
+    "artifact": ""
+  }
+}
