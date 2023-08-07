@@ -23,7 +23,9 @@ provider:
       uni_sh_img:
         path: ./uni_sh/
         platform: linux/amd64
-      
+      us_bls_img:
+        path: ./us_bls/
+        platform: linux/amd64      
       
 
 functions:
@@ -62,4 +64,11 @@ functions:
     memorySize: 2048
     image:
       name: uni_sh_img
+
+  us_bls:
+    timeout: 60
+    # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+    memorySize: 2048
+    image:
+      name: us_bls_img
 
