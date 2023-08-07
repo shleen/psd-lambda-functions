@@ -15,6 +15,7 @@ RUN pip install pandas
 RUN pip install openpyxl
 RUN pip install python-dotenv
 RUN pip install boto3
+RUN pip install beautifulsoup4
 COPY --from=build /opt/chrome-linux /opt/chrome
 COPY --from=build /opt/chromedriver /opt/
 COPY main.py ./
