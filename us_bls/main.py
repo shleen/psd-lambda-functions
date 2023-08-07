@@ -201,6 +201,14 @@ def handler(event=None, context=None):
     options.add_experimental_option("prefs", prefs)
     driver = webdriver.Chrome("/opt/chromedriver", options=options)
 
+    # Delete contents of temp folder
+    # TODO: haven't tested if this breaks the code
+    for root, dirs, files in os.walk('/tmp'):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
+
     driver.get("https://data.bls.gov/oes/#/home")
     print(driver.title)
 
