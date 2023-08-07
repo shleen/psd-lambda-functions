@@ -31,7 +31,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 
-driver = webdriver.Firefox()
+import os
+import pandas as pd
+
+import boto3
+
+driver = webdriver.Chrome()
 driver.get("https://data.bls.gov/oes/#/home")
 print(driver.title)
 
@@ -91,49 +96,85 @@ def click_element_by_xpath(driver, xpath):
     element.click()
     time.sleep(3)  # Add a short delay to allow the page to load
 
-try:
-    # Loop through the XPaths for step 2 and complete the cycle
-    for i in range(len(step2_xpaths)):
-        driver.get("https://data.bls.gov/oes/#/home")
-        step2_xpath = step2_xpaths[i]
+def get_us_bls(driver):
+    try:
+        # Loop through the XPaths for step 2 and complete the cycle
+        for i in range(len(step2_xpaths)):
+            driver.get("https://data.bls.gov/oes/#/home")
+            step2_xpath = step2_xpaths[i]
 
-        # Click on elements for each step using the appropriate XPaths
-        click_element_by_xpath(driver, step1_xpath)
-        print("Step 1 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step2_xpath)
-        print(f"Step 2 (XPath {i+1}) done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step3_xpath)
-        print("Step 3 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step4_xpath)
-        print("Step 4 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step5_xpath)
-        print("Step 5 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step6_xpath)
-        print("Step 6 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step7_xpath)
-        print("Step 7 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step8_xpath)
-        print("Step 8 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step9_xpath)
-        print("Step 9 done")
-        time.sleep(3)
-        click_element_by_xpath(driver, step10_xpath)
-        print("Step 10 done")
-        time.sleep(3)
+            # Click on elements for each step using the appropriate XPaths
+            time.sleep(3)
+            click_element_by_xpath(driver, step1_xpath)
+            print("Step 1 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step2_xpath)
+            print(f"Step 2 (XPath {i+1}) done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step3_xpath)
+            print("Step 3 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step4_xpath)
+            print("Step 4 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step5_xpath)
+            print("Step 5 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step6_xpath)
+            print("Step 6 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step7_xpath)
+            print("Step 7 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step8_xpath)
+            print("Step 8 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step9_xpath)
+            print("Step 9 done")
+            time.sleep(3)
+            click_element_by_xpath(driver, step10_xpath)
+            print("Step 10 done")
+            time.sleep(3)
 
-    # After completing all cycles, wait for the Excel data to download
-    time.sleep(3)
-    print("All excel data download is completed, thank you")
+        # After completing all cycles, wait for the Excel data to download
+        time.sleep(3)
+        print("All excel data download is completed, thank you")
 
-finally:
-    driver.close()
+    finally:
+        driver.close()
 
-handler()
+get_us_bls(driver)
+
+def consolidate_us_bls():
+    # Path to the folder containing your Excel files
+    input_folder = r"C:\Users\fuwen\Downloads"
+
+    # Path to the output Excel file where you want to append the data
+    output_file = r"C:\Users\fuwen\Downloads\US BLS.csv"
+
+    # FIXME: not good way of identifying files
+    # Get a list of all .xlsx files in the input folder
+    input_files = [f for f in os.listdir(input_folder) if f.endswith('.xlsx')]
+
+    # Initialize an empty list to store DataFrames
+    data_frames = []
+
+    # Loop through each input file and read it as a DataFrame
+    for file in input_files:
+        file_path = os.path.join(input_folder, file)
+        df = pd.read_excel(file_path, header=None)  # Read without header
+        data_frames.append(df)
+
+    # Concatenate all DataFrames in the list into a single DataFrame
+    combined_data = pd.concat(data_frames, ignore_index=True)
+
+    # Write the combined data to the output Excel file without column headers
+    combined_data.to_csv(output_file, index=False, header=False)
+
+    print("Data appended and saved to", output_file)
+
+    # Upload the Excel file on S3
+    s3_client = boto3.client('s3')
+    s3_client.upload_file('/tmp/US BLS.csv', 'psd-dashboard-data', f'US BLS {int(time.time())}.xlsx')
+
+get_us_bls(driver)
