@@ -190,6 +190,10 @@ def handler(event=None, context=None):
     # Upload to S3
     df_qs.to_csv("/tmp/qs_scrape.csv")
     s3_client = boto3.client('s3')
-    s3_client.upload_file("/tmp/qs_scrape.csv", "psd-dashboard-data", f"qs_scrape {int(time.time())}.csv")
+    timestamp = time.time()
+    value = dt.datetime.fromtimestamp(timestamp)
+    human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
+    # TODO: File name changed. Needs to be changed on Workato as well if it breaks.
+    s3_client.upload_file("/tmp/qs_scrape.csv", "psd-dashboard-data", f"QS Scrape {human_time}.csv")
 
 # handler()

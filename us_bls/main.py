@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import shutil
 import time
+import datetime
 
 from dotenv import load_dotenv
 from queue import Queue
@@ -169,13 +170,14 @@ def consolidate_us_bls():
 
     # Upload the Excel file on S3
     s3_client = boto3.client('s3')
-    s3_client.upload_file('/tmp/US BLS.csv', 'psd-dashboard-data', f'US BLS {int(time.time())}.csv')
+    timestamp = time.time()
+    value = datetime.datetime.fromtimestamp(timestamp)
+    human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
+    s3_client.upload_file('/tmp/US BLS.csv', 'psd-dashboard-data', f'US BLS {human_time}.csv')
 
 # AWS Lambda calls the handler() function by default. The functions that we want to invoke must be in order in handler(). Thus, we don't need to call handler() in
 # AWS Lambda, but we have to when testing in Docker (because Docker does not call handler() by default). 
 def handler(event=None, context=None):
-    # TODO: clear files
-
     # load API Keys
     load_dotenv()
 

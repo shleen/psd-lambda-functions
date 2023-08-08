@@ -25,7 +25,10 @@ provider:
         platform: linux/amd64
       us_bls_img:
         path: ./us_bls/
-        platform: linux/amd64      
+        platform: linux/amd64
+      cb_insights_img:
+        path: ./cb_insights/
+        platform: linux/amd64            
       
 
 functions:
@@ -72,3 +75,9 @@ functions:
     image:
       name: us_bls_img
 
+  cb_insights:
+    timeout: 60
+    # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+    memorySize: 2048
+    image:
+      name: cb_insights_img
