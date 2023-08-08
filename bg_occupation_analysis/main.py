@@ -14,6 +14,7 @@ import os
 import pandas as pd
 import shutil
 import time
+import datetime
 
 from dotenv import load_dotenv
 from queue import Queue
@@ -237,7 +238,11 @@ def consolidate_occupation_analysis_skills():
   # Upload and save the Excel file as 'Occupation Analysis Skills.csv' on S3
   s3_client = boto3.client('s3')
   # s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', 'Occupation Analysis Skills.csv')
-  s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', f'Occupation Analysis Skills {int(time.time())}.csv')
+  # TODO: check if this works
+  timestamp = time.time()
+  value = datetime.datetime.fromtimestamp(timestamp)
+  human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
+  s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', f'Occupation Analysis Skills {human_time}.csv')
 
 # AWS Lambda calls the handler() function by default. The functions that we want to invoke must be in order in handler(). Thus, we don't need to call handler() in
 # AWS Lambda, but we have to when testing in Docker (because Docker does not call handler() by default).

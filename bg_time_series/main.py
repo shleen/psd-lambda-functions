@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import shutil
 import time
+import datetime
 
 from dotenv import load_dotenv
 from queue import Queue
@@ -240,7 +241,11 @@ def consolidate_time_series_analysis():
   # Upload and save the Excel file as 'time_series_analysis_{int(time.time())}.csv' on S3
   s3_client = boto3.client('s3')
   # s3_client.upload_file('/tmp/Time Series Analysis.csv', 'psd-dashboard-data', f'time_series_analysis_{int(time.time())}.csv')
-  s3_client.upload_file('/tmp/Time Series Analysis.csv', 'psd-dashboard-data', f'Time Series Analysis {int(time.time())}.csv')
+
+  timestamp = time.time()
+  value = datetime.datetime.fromtimestamp(timestamp)
+  human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
+  s3_client.upload_file('/tmp/Time Series Analysis.csv', 'psd-dashboard-data', f'Time Series Analysis {human_time}.csv')
 
 # AWS Lambda calls the handler() function by default. The functions that we want to invoke must be in order in handler(). Thus, we don't need to call handler() in
 # AWS Lambda, but we have to when testing in Docker (because Docker does not call handler() by default).  
