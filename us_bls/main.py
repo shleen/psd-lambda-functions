@@ -170,7 +170,6 @@ def consolidate_us_bls():
 
     # Upload the Excel file on S3
     s3_client = boto3.client('s3')
-    # TODO: check if this works
     timestamp = time.time()
     value = datetime.datetime.fromtimestamp(timestamp)
     human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')

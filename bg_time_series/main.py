@@ -240,8 +240,6 @@ def consolidate_time_series_analysis():
 
   # Upload and save the Excel file as 'time_series_analysis_{int(time.time())}.csv' on S3
   s3_client = boto3.client('s3')
-  # s3_client.upload_file('/tmp/Time Series Analysis.csv', 'psd-dashboard-data', f'time_series_analysis_{int(time.time())}.csv')
-
   timestamp = time.time()
   value = datetime.datetime.fromtimestamp(timestamp)
   human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')

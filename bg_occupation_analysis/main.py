@@ -237,8 +237,6 @@ def consolidate_occupation_analysis_skills():
   
   # Upload and save the Excel file as 'Occupation Analysis Skills.csv' on S3
   s3_client = boto3.client('s3')
-  # s3_client.upload_file('/tmp/Occupation Analysis Skills.csv', 'psd-dashboard-data', 'Occupation Analysis Skills.csv')
-  # TODO: check if this works
   timestamp = time.time()
   value = datetime.datetime.fromtimestamp(timestamp)
   human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
