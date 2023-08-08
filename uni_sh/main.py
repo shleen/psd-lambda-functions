@@ -234,6 +234,6 @@ def handler(event=None, context=None):
     value = dt.datetime.fromtimestamp(timestamp)
     human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
     # TODO: File name changed. Needs to be changed on Workato as well if it breaks.
-    s3_client.upload_file("/tmp/sh_scrape.csv", "psd-dashboard-data", f"Sh Scrape {human_time}.csv")
+    s3_client.upload_file("/tmp/sh_scrape.csv", "psd-dashboard-data", f"SH Scrape {human_time}.csv")
 
 # handler()
