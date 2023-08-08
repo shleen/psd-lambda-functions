@@ -2,16 +2,26 @@
 
 # This is the file that should be used to run the actual script. 
 
+# Import libraries
+import boto3
+import os
+import pandas as pd
+import shutil
+import time
+
+from dotenv import load_dotenv
+from queue import Queue
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from tempfile import mkdtemp
+
+from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 from selenium.webdriver.support.wait import WebDriverWait
 from bs4 import BeautifulSoup
-
-import time
-import pandas as pd
-
-import os
 
 def wait(num=3):
     time.sleep(num)
@@ -78,7 +88,11 @@ def close_cookie(driver):
         print("Cookie button not found")
 
 def login(driver):
-    CB_USERNAME = os.environ['CB_USERNAME']; CB_PASSWORD = os.environ['CB_PASSWORD']
+    # load API Keys
+    load_dotenv()
+    CB_USERNAME = os.environ['CB_USERNAME']
+    CB_PASSWORD = os.environ['CB_PASSWORD']
+    
     try:
         email_btn = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//input[@placeholder='Enter your email address']"))
@@ -100,11 +114,38 @@ def login(driver):
         print("Login not successful")
 
 def setup(headless=False):
+    # load API Keys
+    load_dotenv()
+    
     options = webdriver.ChromeOptions()
     # headless means that the browser will not be displayed when running the code
     options.add_argument('--headless')
 
-    driver = webdriver.Chrome(options=options) if headless else webdriver.Chrome()
+    # Configure ChromeDriver
+    options.binary_location = '/opt/chrome/chrome'
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1280x1696")
+    options.add_argument("--single-process")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-dev-tools")
+    options.add_argument("--no-zygote")
+    options.add_argument(f"--user-data-dir={mkdtemp()}")
+    options.add_argument(f"--data-path={mkdtemp()}")
+    options.add_argument(f"--disk-cache-dir={mkdtemp()}")
+    options.add_argument("--remote-debugging-port=9222")
+    prefs = {"profile.default_content_settings.popups": 0,    
+            "download.default_directory":r"/tmp",
+            "download.prompt_for_download": False,
+            "directory_upgrade": True}
+    options.add_experimental_option("prefs", prefs)
+
+    # FIXME: note that it was breaking here and some part was deleted
+    driver = webdriver.Chrome(options=options)
+    # Benedict's original line
+    # driver = webdriver.Chrome(options=options) if headless else webdriver.Chrome()
+
     # driver = webdriver.Chrome()#options=options) time.sleep(10)
     driver.get("https://app.cbinsights.com/i/emerging-tech")
     driver.maximize_window() #; long_wait()

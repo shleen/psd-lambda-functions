@@ -107,6 +107,12 @@
         "LogGroupName": "/aws/lambda/extract-bg-prod-us_bls"
       }
     },
+    "CbUnderscoreinsightsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/extract-bg-prod-cb_insights"
+      }
+    },
     "IamRoleLambdaExecution": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -252,6 +258,12 @@
                         "UsUnderscoreblsLogGroup",
                         "Arn"
                       ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "CbUnderscoreinsightsLogGroup",
+                        "Arn"
+                      ]
                     }
                   ]
                 }
@@ -290,68 +302,6 @@
           "Ref": "UsUnderscoreblsLambdaFunction"
         },
         "CodeSha256": "3ae8eed8feb44c7f58dbe2f9314691b166a0fed8c76a6935be03dec5410a5fb0"
-      }
-    },
-    "TimeUnderscoreseriesLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:f702c74dd67cb06762bac44b3f01d7f0173860e259193d022f99b588f8ad9b21"
-        },
-        "PackageType": "Image",
-        "FunctionName": "extract-bg-prod-time_series",
-        "MemorySize": 2048,
-        "Timeout": 60,
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "TimeUnderscoreseriesLogGroup"
-      ]
-    },
-    "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "TimeUnderscoreseriesLambdaFunction"
-        },
-        "CodeSha256": "f702c74dd67cb06762bac44b3f01d7f0173860e259193d022f99b588f8ad9b21"
-      }
-    },
-    "UniUnderscoretheLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:3c71d230d72851b93ed957dd1461bf4d3d810faeaa40913e1110770b31aef014"
-        },
-        "PackageType": "Image",
-        "FunctionName": "extract-bg-prod-uni_the",
-        "MemorySize": 2048,
-        "Timeout": 60,
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "UniUnderscoretheLogGroup"
-      ]
-    },
-    "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "UniUnderscoretheLambdaFunction"
-        },
-        "CodeSha256": "3c71d230d72851b93ed957dd1461bf4d3d810faeaa40913e1110770b31aef014"
       }
     },
     "OccupationUnderscoreanalysisLambdaFunction": {
@@ -416,6 +366,68 @@
         "CodeSha256": "112cb5cd9edd93ccf4b7ec668913680ea4addf5d4be203036508d8bbdf9c69b3"
       }
     },
+    "TimeUnderscoreseriesLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:f702c74dd67cb06762bac44b3f01d7f0173860e259193d022f99b588f8ad9b21"
+        },
+        "PackageType": "Image",
+        "FunctionName": "extract-bg-prod-time_series",
+        "MemorySize": 2048,
+        "Timeout": 60,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "TimeUnderscoreseriesLogGroup"
+      ]
+    },
+    "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "TimeUnderscoreseriesLambdaFunction"
+        },
+        "CodeSha256": "f702c74dd67cb06762bac44b3f01d7f0173860e259193d022f99b588f8ad9b21"
+      }
+    },
+    "UniUnderscoretheLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:3c71d230d72851b93ed957dd1461bf4d3d810faeaa40913e1110770b31aef014"
+        },
+        "PackageType": "Image",
+        "FunctionName": "extract-bg-prod-uni_the",
+        "MemorySize": 2048,
+        "Timeout": 60,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "UniUnderscoretheLogGroup"
+      ]
+    },
+    "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UniUnderscoretheLambdaFunction"
+        },
+        "CodeSha256": "3c71d230d72851b93ed957dd1461bf4d3d810faeaa40913e1110770b31aef014"
+      }
+    },
     "UniUnderscoreshLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -445,6 +457,37 @@
           "Ref": "UniUnderscoreshLambdaFunction"
         },
         "CodeSha256": "d5af23f75626f99079a69f6b0ee6587e5dfb3f2e6e91c6b2f7fc56323c24fc90"
+      }
+    },
+    "CbUnderscoreinsightsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ImageUri": "006352932045.dkr.ecr.ap-southeast-1.amazonaws.com/serverless-extract-bg-prod@sha256:c6652b7c86309690c2b519a65158731c1b24fbcc65af1302929cd8a2d69d1e0e"
+        },
+        "PackageType": "Image",
+        "FunctionName": "extract-bg-prod-cb_insights",
+        "MemorySize": 2048,
+        "Timeout": 60,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "CbUnderscoreinsightsLogGroup"
+      ]
+    },
+    "CbUnderscoreinsightsLambdaVersionxMlIBbVi1zw0NIcrtKe7PlObEqZR3QzxSTCo6YUjwM": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CbUnderscoreinsightsLambdaFunction"
+        },
+        "CodeSha256": "c6652b7c86309690c2b519a65158731c1b24fbcc65af1302929cd8a2d69d1e0e"
       }
     },
     "CWLSubFilterTimeUnderscoreseriesLogGroupApSoutheast1": {
@@ -506,6 +549,16 @@
           "Ref": "UsUnderscoreblsLogGroup"
         }
       }
+    },
+    "CWLSubFilterCbUnderscoreinsightsLogGroupApSoutheast1": {
+      "Type": "AWS::Logs::SubscriptionFilter",
+      "Properties": {
+        "DestinationArn": "arn:aws:logs:ap-southeast-1:802587217904:destination:f82fdd57-4761-48d6-8807-70ce07b64443#kn7Bq1Z0fT3wSYwlzl#extract-bg#prod",
+        "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+        "LogGroupName": {
+          "Ref": "CbUnderscoreinsightsLogGroup"
+        }
+      }
     }
   },
   "Outputs": {
@@ -537,24 +590,6 @@
         "Name": "sls-extract-bg-prod-UsUnderscoreblsLambdaFunctionQualifiedArn"
       }
     },
-    "TimeUnderscoreseriesLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4"
-      },
-      "Export": {
-        "Name": "sls-extract-bg-prod-TimeUnderscoreseriesLambdaFunctionQualifiedArn"
-      }
-    },
-    "UniUnderscoretheLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU"
-      },
-      "Export": {
-        "Name": "sls-extract-bg-prod-UniUnderscoretheLambdaFunctionQualifiedArn"
-      }
-    },
     "OccupationUnderscoreanalysisLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
@@ -573,6 +608,24 @@
         "Name": "sls-extract-bg-prod-UniUnderscoreqsLambdaFunctionQualifiedArn"
       }
     },
+    "TimeUnderscoreseriesLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "TimeUnderscoreseriesLambdaVersion7d5PNvTb1688A6J3Toa53wKtaIdOcCyuuoX8ChiJ4"
+      },
+      "Export": {
+        "Name": "sls-extract-bg-prod-TimeUnderscoreseriesLambdaFunctionQualifiedArn"
+      }
+    },
+    "UniUnderscoretheLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "UniUnderscoretheLambdaVersionuYbTP6wZv3bz5iLkfcWWGdRHskIKzATARfUTlxvaU"
+      },
+      "Export": {
+        "Name": "sls-extract-bg-prod-UniUnderscoretheLambdaFunctionQualifiedArn"
+      }
+    },
     "UniUnderscoreshLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
@@ -580,6 +633,15 @@
       },
       "Export": {
         "Name": "sls-extract-bg-prod-UniUnderscoreshLambdaFunctionQualifiedArn"
+      }
+    },
+    "CbUnderscoreinsightsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CbUnderscoreinsightsLambdaVersionxMlIBbVi1zw0NIcrtKe7PlObEqZR3QzxSTCo6YUjwM"
+      },
+      "Export": {
+        "Name": "sls-extract-bg-prod-CbUnderscoreinsightsLambdaFunctionQualifiedArn"
       }
     }
   }
