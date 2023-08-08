@@ -141,7 +141,6 @@ def setup(headless=False):
             "directory_upgrade": True}
     options.add_experimental_option("prefs", prefs)
 
-    # FIXME: note that it was breaking here and some part was deleted
     driver = webdriver.Chrome(options=options)
     # Benedict's original line
     # driver = webdriver.Chrome(options=options) if headless else webdriver.Chrome()
