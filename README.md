@@ -149,6 +149,8 @@ This recipe will trigger an AWS Lambda function that will run a Selenium script 
 2. The OECD data will be cleaned.
 3. The final csv file with the clean data will be sent as an attachment via email.
 
+# Keeping MPS readme here in case it is reverted.
+
 ### MPS (KIV)
 1. Manual copy & paste of the 'EmpVacDmd' cells into the 'MPS Template' Excel workbook<sup>2</sup>. 
 2. Excel will automatically map the job roles to SSOCs. This is done using a formula<sup>3</sup> that references a sheet that contains the job role to SSOC mapping.
