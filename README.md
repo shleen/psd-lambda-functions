@@ -10,6 +10,17 @@ This page details the work done by IMDA PSD Interns (Sheline, Benedict, Aarthi, 
 3. Considering what can be done to tackle the gaps in 1. and 2. 
 
 ## Non-Classified Data Sources
+### \[Supply] MOM Recruitment and Resignation Rate
+This data is taken directly from the Ministry of Manpower (MOM) website 
+([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). 
+The current "API" call for this script goes into the link and accesses the public URL for the file and may not work in the future. 
+However, the link earlier is of the original public page, and any updates should be able to be accessed from there. 
+It comprises of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this data is:
+
+1. **Recruitment Rate**: The recruitment rate is useful as another data source to compare for output of tech talent.
+2. **Resignation rate**: The resignation rate is useful to compare and see if there is a higher than normal resignation rate for the Infocomm sector. 
+
+
 ### \[Supply] University Rankings (QS + THE + SH)
 We extract the following data points from 3 ranking system websites:
 #### Quacquarelli Symonds (QS) Rankings for Computer Science and Information Systems.
@@ -38,16 +49,6 @@ The "qs_csv", "sh_csv", "the_csv" csv files contain the 2023 ranking information
 
 The Overall Score comprises 80% Overall (across all 3 rankings) Repuatation Score and 20% Citation Score. We also normalized for missing data points.
 
-### \[Supply] MOM Recruitment and Resignation Rate
-This data is taken directly from the Ministry of Manpower (MOM) website 
-([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). 
-The current "API" call for this script goes into the link and accesses the public URL for the file and may not work in the future. 
-However, the link earlier is of the original public page, and any updates should be able to be accessed from there. 
-It comprises of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this data is:
-
-1. **Recruitment Rate**: The recruitment rate is useful as another data source to compare for output of tech talent.
-2. **Resignation rate**: The resignation rate is useful to compare and see if there is a higher than normal resignation rate for the Infocomm sector. 
-
 ### [Supply & Demand] US BLS
 United States Bureau of Labour Statistics (US BLS) is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics.
 
@@ -60,6 +61,7 @@ We extract:
 2. Employment Numbers (in 1000s)
 3. Wages
 
+
 ### \[Demand] BG
 Burning Glass Singapore (BG). We use the Labour Insight dashboard made by BG. We generate 2 separate reports:
 
@@ -69,6 +71,7 @@ Burning Glass Singapore (BG). We use the Labour Insight dashboard made by BG. We
 2. Time Series Analysis
     - You can find this at Create Reports > Focus on - Time Series Analysis
     - We use this report to get the number of job postings on a monthly basis for each SSOC that we're tracking. These numbers give us a sense of the industry's demand for each occupation.
+
 
 ### \[Supply] CB Insights
 CB Insights provides market intelligence on high growth private companies and investor activities.
@@ -94,6 +97,7 @@ CB Insights groups campanies under Sector -> Industry -> Sub-Industry. We curren
 5. Mobile & Telecommunications
 6. Software (non-internet/mobile)
 
+
 ### \[Demand] OECD
 Organisation for Economic Co-operation and Development (OECD). 
 
@@ -104,21 +108,23 @@ This can be used to:
 We extract: 
 1. Employment numbers of the Information and Commuication sectors/industries per year (2008-present)
 
+
 ## Data Extraction + Preparation Pipeline
 This section outlines the existing + planned pipeline to automatically extract and prepare the above data sources for visualization in Tableau.
 
-### QS, THE, SHANGHAI
+### MOM Recruitment and Resignation Rate
+Process for both Recruitment and Resignation Rate is the same: 
+
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python "API" call from a public URL that will extract the MOM data.
+2. The MOM data will be cleaned and the relevant rows will be stored in a file. 
+3. The final csv file with the clean data will be sent as an attachment via email.
+
+### Uni Rankings
 1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
 This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, 
 as well as, combines the three scripts and calculates an overall combined score data.
 2. The overall combined score data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
-
-### MPS
-1. Manual copy & paste of the 'EmpVacDmd' cells into the 'MPS Template' Excel workbook<sup>2</sup>. 
-2. Excel will automatically map the job roles to SSOCs. This is done using a formula<sup>3</sup> that references a sheet that contains the job role to SSOC mapping.
-3. (Planned) Excel<sup>4</sup> and do an "exploding" to deal with job roles that map to multiple SSOCs.
-4. (Planned) Move the 'MPS Template' file into some previously decided upon location, for Tableau to ultimately read in.
 
 ### US BLS
 1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
@@ -132,23 +138,22 @@ This recipe will trigger an AWS Lambda function that will run a Selenium script 
 2. The BG data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
-### OECD
-1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python API call that will extract the OECD data.
-2. The OECD data will be cleaned.
-3. The final csv file with the clean data will be sent as an attachment via email.
-
 ### CB Insights
 1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
 This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the company data from CB Insights.
 2. The CB Insights data gets uploaded onto AWS S3.
 3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
 
-### MOM Recruitment and Resignation Rate
-Process for both Recruitment and Resignation Rate is the same: 
-
-1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python "API" call from a public URL that will extract the MOM data.
-2. The MOM data will be cleaned and the relevant rows will be stored in a file. 
+### OECD
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python API call that will extract the OECD data.
+2. The OECD data will be cleaned.
 3. The final csv file with the clean data will be sent as an attachment via email.
+
+### MPS (KIV)
+1. Manual copy & paste of the 'EmpVacDmd' cells into the 'MPS Template' Excel workbook<sup>2</sup>. 
+2. Excel will automatically map the job roles to SSOCs. This is done using a formula<sup>3</sup> that references a sheet that contains the job role to SSOC mapping.
+3. (Planned) Excel<sup>4</sup> and do an "exploding" to deal with job roles that map to multiple SSOCs.
+4. (Planned) Move the 'MPS Template' file into some previously decided upon location, for Tableau to ultimately read in.
 
 ### MPS (KIV)
 IMDA Manpower Survey (MPS). It is administered by IMDA annually and collates data points like employment and vacancy numbers, and a variety of other numbers.
