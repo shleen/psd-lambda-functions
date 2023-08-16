@@ -28,6 +28,9 @@ provider:
         platform: linux/amd64
       cb_insights_img:
         path: ./cb_insights/
+        platform: linux/amd64
+      extract_table_img:
+        path: ./extract_table/
         platform: linux/amd64            
       
 
@@ -81,3 +84,10 @@ functions:
     memorySize: 2048
     image:
       name: cb_insights_img
+
+  extract_table:
+    timeout: 60
+    # If you experience any errors such as Chrome crashing or not being available you might need to increase the storage available to your Lambda Function. See #102
+    memorySize: 2048
+    image:
+      name: extract_table_img

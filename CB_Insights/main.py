@@ -141,9 +141,9 @@ def setup(headless=False):
             "directory_upgrade": True}
     options.add_experimental_option("prefs", prefs)
 
-    driver = webdriver.Chrome(options=options)
+    # driver = webdriver.Chrome(options=options)
     # Benedict's original line
-    # driver = webdriver.Chrome(options=options) if headless else webdriver.Chrome()
+    driver = webdriver.Chrome(options=options) if headless else webdriver.Chrome()
 
     # driver = webdriver.Chrome()#options=options) time.sleep(10)
     driver.get("https://app.cbinsights.com/i/emerging-tech")
@@ -264,4 +264,4 @@ def handler(event=None, context=None):
     time.sleep(10)
     driver.close()
 
-handler()
+# handler()
