@@ -142,7 +142,7 @@ This recipe will trigger an AWS Lambda function that will run a Selenium script 
 1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
 This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the company data from CB Insights.
 2. The CB Insights data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>2</sup>.
 
 ### OECD
 1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python API call that will extract the OECD data.
@@ -150,18 +150,7 @@ This recipe will trigger an AWS Lambda function that will run a Selenium script 
 3. The final csv file with the clean data will be sent as an attachment via email.
 
 ### MPS (KIV)
-1. Manual copy & paste of the 'EmpVacDmd' cells into the 'MPS Template' Excel workbook<sup>2</sup>. 
-2. Excel will automatically map the job roles to SSOCs. This is done using a formula<sup>3</sup> that references a sheet that contains the job role to SSOC mapping.
-3. (Planned) Excel<sup>4</sup> and do an "exploding" to deal with job roles that map to multiple SSOCs.
-4. (Planned) Move the 'MPS Template' file into some previously decided upon location, for Tableau to ultimately read in.
-
-### MPS (KIV)
 IMDA Manpower Survey (MPS). It is administered by IMDA annually and collates data points like employment and vacancy numbers, and a variety of other numbers.
- 
-We want the 'Employment' and 'Vacancy' columns from the 'EmpVacDmd' sheet in the MPS Excel workbook to be fed into Tableau. To do that, we need to
-
-1. Move the specific cells of the employment and vacancy numbers into a new sheet. Specifically, these cells should be located at cell A1, so that Tableau can digest the sheet correctly.
-2. Map each job role to its SSOC ([Singapore Standard Occupational Classification](https://www.singstat.gov.sg/standards/standards-and-classifications/ssoc)). In MPS, there are only job roles listed without SSOCs, and we need to map the job roles to its SSOC for when we eventually put this data into Tableau and can only identify the numbers by the SSOC it's matched to.
 
 ## Technical Details
 ### Note for Windows Users
@@ -185,10 +174,4 @@ If you require Selenium, you're gonna have to create a Docker container and depl
 ## Footnotes
 1&nbsp; We work with 5D SSOCs - 5-digit numerical codes that correspond to an occupation. For this report, Burning Glass only takes 4D SSOCs. This means that one 'dimension' of occupations are lost. i.e. SSOCs 12222 and 12223 refer to separate but similar occupations. The 4D SSOC 1222 will encapsulate both 12222 and 12223. This is a known limitation of Burning Glass and is something that has to be worked around.
 
-2&nbsp; This step is necessary because the MPS is formatted to be easily human-readable, which also means that it isn't easily computer-readable. Additionally, from looking at previous years' MPSs, it appears that we can expect pretty significant changes in formatting. This means that any script to extract these cells automatically will very likely become non-workable by the next year.
-
-3&nbsp; This is sliiightly complicated because we have one sheet that contains the SSOC to job role mapping. However, we've found that 
-
-4&nbsp; We're using Excel to this because MPS is classified as Confidential (rather than Restricted) and trying to get clearance to upload MPS onto Workato, we think, will take a really long time + be almost impossible. Additionally, since the "exploding" step is not too too complicated, the plan now is to try to do all of this within Excel.
-
-5&nbsp; This step currently sends the email to the recipient's junk mail, which is less than ideal. This happens because of the attachment -  emails sent with no attachment are placed into the inbox correctly. A possible alternative proposed by Luan Ting is to first zip the attachment up and then to password protect it. Apparently the TD team has used this solution for other use cases facing similar issues. Workato has provided a guide for doing this. 
+2&nbsp; This step currently sends the email to the recipient's junk mail, which is less than ideal. This happens because of the attachment -  emails sent with no attachment are placed into the inbox correctly. A possible alternative proposed by Luan Ting is to first zip the attachment up and then to password protect it. Apparently the TD team has used this solution for other use cases facing similar issues. Workato has provided a guide for doing this. 
