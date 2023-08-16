@@ -1,19 +1,69 @@
 # Documentation  
-This page details the work done by IMDA PSD Interns (Sheline, Benedict, Aarthi, Anir, Vania and Fu Wen) to extract, clean, and process all the data sources for the final dashboard.
+This page details the work done by IMDA PSD Interns (Sheline, Benedict, Aarthi, Anir, Vania and Fu Wen) to extract, clean, and process data sources for a J&S dashboard.
 
-## Windows Users
-If you are using a Windows Machine, you need to use the Windows Subsystem for Linux (WSL). 
-## Data Sources
-### MPS
-This is the IMDA Manpower Survey. It is administered by IMDA annually and collates data points like employment and vacancy numbers, and a variety of other numbers.
+## Policy Questions
+1. Comparing the supply of tech talent and demand for tech jobs in Singapore
+    - What is the supply for a certain SSOC?
+    - What is the demand for a certain SSOC?
+    - Is there a mismatch between supply and demand?
+2. Comparing the difference in supply and demand between Singapore and other countries
+3. Considering what can be done to tackle the gaps in 1. and 2. 
 
-Ideally, we want the 'Employment' and 'Vacancy' columns from the 'EmpVacDmd' sheet in the MPS Excel workbook to be fed into Tableau. To do that, we need to
+## Non-Classified Data Sources
+### \[Supply] MOM Recruitment and Resignation Rate
+This data is taken directly from the Ministry of Manpower (MOM) website 
+([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). 
+The current "API" call for this script goes into the link and accesses the public URL for the file and may not work in the future. 
+However, the link earlier is of the original public page, and any updates should be able to be accessed from there. 
+It comprises of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this data is:
 
-1. Move the specific cells of the employment and vacancy numbers into a new sheet. Specifically, these cells should be located at cell A1, so that Tableau can digest the sheet correctly.
-2. Map each job role to its SSOC ([Singapore Standard Occupational Classification](https://www.singstat.gov.sg/standards/standards-and-classifications/ssoc)). In MPS, there are only job roles listed without SSOCs, and we need to map the job roles to its SSOC for when we eventually put this data into Tableau and can only identify the numbers by the SSOC it's matched to.
+1. **Recruitment Rate**: The recruitment rate is useful as another data source to compare for output of tech talent.
+2. **Resignation rate**: The resignation rate is useful to compare and see if there is a higher than normal resignation rate for the Infocomm sector. 
 
-### BG
-This is Burning Glass. Specifically, we use the Labour Insight dashboard made by Burning Glass. On Labour Insight, we want to extract two main things.
+
+### \[Supply] University Rankings (QS + THE + SH)
+We extract the following data points from 3 ranking system websites:
+#### Quacquarelli Symonds (QS) Rankings for Computer Science and Information Systems.
+1. University
+2. Country
+3. Citations Per Paper Score
+4. Academic Reputation Score
+5. Employer Reputation Score
+
+#### Times Higher Education Rankings for Computer Science
+1. University
+2. Country
+3. Citations Per Paper Score
+4. Research Score
+5. Teaching Score
+
+#### Shanghai Rankings for Computer Science and Engineering
+1. University
+2. Category Normalized Citation Impact (CNCI) Score -- ratio of citations of papers published to the average citations of papers
+3. Top Journals (TOP) Score --number of papers published in top journals in an academic subject
+
+#### Combining
+In the "uni_rankings" folder, we store the "uni_rankings_full_script.ipnyb" notebook which scrapes uni ranking information from QS, THE, SH websites. It combines them into 1 final ranking csv file "FINAL_ranking_list.csv" by combining/weighting scores from all 3 ranking systems.
+
+The "qs_csv", "sh_csv", "the_csv" csv files contain the 2023 ranking information used in the "merging.ipnyb" notebook. This notebook shows just the combining code given existing data.
+
+The Overall Score comprises 80% Overall (across all 3 rankings) Repuatation Score and 20% Citation Score. We also normalized for missing data points.
+
+### [Supply & Demand] US BLS
+United States Bureau of Labour Statistics (US BLS) is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics.
+
+This can be used to find
+1.	Demand/Vacancies for Tech Occupations with respect to US
+2.	Which sectors in the US have the highest employment of tech occupations
+
+We extract:
+1. Occupation
+2. Employment Numbers (in 1000s)
+3. Wages
+
+
+### \[Demand] BG
+Burning Glass Singapore (BG). We use the Labour Insight dashboard made by BG. We generate 2 separate reports:
 
 1. Occupation Analysis
     - You can find this at Snapshots > Occupation Analysis.
@@ -22,100 +72,24 @@ This is Burning Glass. Specifically, we use the Labour Insight dashboard made by
     - You can find this at Create Reports > Focus on - Time Series Analysis
     - We use this report to get the number of job postings on a monthly basis for each SSOC that we're tracking. These numbers give us a sense of the industry's demand for each occupation.
 
-### United States Bureau of Labour Statistics
-The Bureau of Labor Statistics is a unit of the United States Department of Labor. It is the principal fact-finding agency for the U.S. government in the broad field of labor economics and statistics and serves as a principal agency of the U.S. Federal Statistical System.
 
-In particular, We intend to incorporate the following as part of our policy questions:
-1.	Demand/Vacancies for Tech Occupations with respect to US
-2.	Which sectors have the highest employment of tech occupations
+### \[Supply] CB Insights
+CB Insights provides market intelligence on high growth private companies and investor activities.
 
-### QS
-This is Quacquarelli Symonds Rankings. Specifically, we filter by Computer Science and Information Systems since we are interested in tech degrees. We want to extract five main things.
-
-1. University
-- You can get the University Name from the table .
-2. Country
-- You can get the Country and City Name combined from the table.
-- The script will be such that just the Country Name will be extracted.
-3. QS Citations per paper
-- You can get the QS Citations per paper by college from the table.
-4. QS Academic Reputation
-- You can get the QS Academic Reputation by college from the table.
-5. QS Employer Reputation
-- You can get the QS Employer Reputation by college from the table.
-
-### THE
-This is Times Higher Education. Specifically, we filter by Computer Science since we are interested in tech degrees. We want to extract five main things.
-
-1. University
-- You can get the University Name from the table .
-2. Country
-- You can get the Country and City Name combined from the table.
-- The script will be such that just the Country Name will be extracted.
-3. Citations
-- You can get the Citations per paper by college from the table.
-4. Research
-- You can get the Research by college from the table.
-5. Teaching
-- You can get the Teaching by college from the table.
-
-### Shanghai
-This is Shanghai Rankings. Specifically, we filter by Computer Science and Engineering since we are interested in tech degrees. We want to extract three main things.
-
-1. University
-- You can get the University Name from the table .
-2. CNCI
-- You can get the CNCI from the table.
-3. TOP
-- You can get the TOP from the table.
-
-### OECD
-This is Organisation for Economic Co-operation and Development. It comprises of the 
-data from various country members. Specifically, we get the Employment by Activities 
-(ISIC Rev 4) for the list of countries we are interested in. We get the employment 
-numbers of the Information and Commuication sectors/industries of these countries for 
-every year, starting from 2008 to the present year/the most updated year.
-
-We are only extracting employment numbers from the Infocomm sectors/industries from 
-these countries, which can used to look at the trends over time for employment numbers 
-and be used to compare versus Singapore's employment trends. 
-
-### CB Insights
-CB Insights is a private company with a business analytics platform and global 
-database that provides market intelligence on private companies and investor 
-activities. The platform is targeted at private equity, venture capital, investment 
-banking, angel investing, and consulting professionals by providing insights about 
-high growth private companies. 
-
-Fun Fact: CB stands for ChubbyBrain 
-[link](https://www.cbinsights.com/research/team-blog/cb-cb-insights-stand-for/)
-
-We are currently extracting these data points: 
-
-1. Search Input  
-    - Used to check if we are searching for the correct items
+We extract:
+1. Search Input (To check if we are searching for the correct items)
 2. Company Name
-3. URL
-    - Used to check if it is the correct company, should we find any inconsistencies
-with other rows
-4. Total Funding
-    - Funding/Investment amount
-5. Description
-    - Used to check if it is the correct company in terms of what they do
-6. Total Headcount
-    - Potential future datapoint in seeing where the tech talent are going, and if
-there are any emerging companies/industries
+3. URL (To check if it is the correct company, should we find any inconsistencies with other rows)
+4. Total Funding (Funding/Investment amount)
+5. Description (To check if it is the correct company based on what they do)
+6. Total Headcount (Potential datapoint to see where the tech talent is going and if there are any emerging companies/industries)
 7. Country
 8. Sector
 9. Industry
 10. Sub-Industry
 11. Latest Valuation
 
-CB Insights groups campanies under Sector, Industry and Sub-Industry, with each being 
-more detailed than the previous. 
-
-We are currently only pulling data from 6 Sectors:
-
+CB Insights groups campanies under Sector -> Industry -> Sub-Industry. We currently pull data from 6 Sectors:
 1. Computer Hardware & Services
 2. Electronics
 3. Media (Traditional)
@@ -123,58 +97,20 @@ We are currently only pulling data from 6 Sectors:
 5. Mobile & Telecommunications
 6. Software (non-internet/mobile)
 
-As you go down into Industry/Sub-Industry, the companies will be more specifically classified and this is a potential area to explore in the future. 
 
-### MOM Recruitment and Resignation Rate
-This data is taken directly from the Ministry of Manpower (MOM) website 
-([link](https://stats.mom.gov.sg/pages/labourturnovertimeseries.aspx)). 
-The current "API" call for this script goes into the link and accesses the public URL for the file and may not work in the future. 
-However, the link earlier is of the original public page, and any updates should be able to be accessed from there. 
-It comprises of data for the Infocomm industries (2D SSICs of 58-63). The motivation behind this data is:
+### \[Demand] OECD
+Organisation for Economic Co-operation and Development (OECD). 
 
-1. **Recruitment Rate**: The recruitment rate is useful as another data source to 
-compare for output of tech talent.
-2. **Resignation rate**: The resignation rate is useful to compare and see if there is 
-a higher than normal resignation rate for the Infocomm sector. 
+This can be used to:
+1. Identify trends in employment numbers across various countries
+2. Compare global trends with Singapore's
+
+We extract: 
+1. Employment numbers of the Information and Commuication sectors/industries per year (2008-present)
+
 
 ## Data Extraction + Preparation Pipeline
-This section outlines the existing + planned pipeline to automatically extract and prepare the above 2 data sources for visualization in Tableau.
-
-### MPS
-1. Manual copy & paste of the 'EmpVacDmd' cells into the 'MPS Template' Excel workbook<sup>2</sup>. 
-2. Excel will automatically map the job roles to SSOCs. This is done using a formula<sup>3</sup> that references a sheet that contains the job role to SSOC mapping.
-3. (Planned) Excel<sup>4</sup> and do an "exploding" to deal with job roles that map to multiple SSOCs.
-4. (Planned) Move the 'MPS Template' file into some previously decided upon location, for Tableau to ultimately read in.
-
-### BG
-1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
-This recipe will trigger an AWS Lambda function that will run a Selenium script that pulls the BG data.
-2. The BG data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
-
-### US BLS
-1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
-This recipe will trigger an AWS Lambda function that will run a Selenium script that pulls the US BLS data.
-2. The US BLS data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
-
-### QS, THE, SHANGHAI
-1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
-This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, 
-as well as, combines the three scripts and calculates an overall combined score data.
-2. The overall combined score data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
-
-### OECD
-1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python API call that will extract the OECD data.
-2. The OECD data will be cleaned.
-3. The final csv file with the clean data will be sent as an attachment via email.
-
-### CB Insights
-1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
-This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the company data from CB Insights.
-2. The CB Insights data gets uploaded onto AWS S3.
-3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+This section outlines the existing + planned pipeline to automatically extract and prepare the above data sources for visualization in Tableau.
 
 ### MOM Recruitment and Resignation Rate
 Process for both Recruitment and Resignation Rate is the same: 
@@ -183,8 +119,53 @@ Process for both Recruitment and Resignation Rate is the same:
 2. The MOM data will be cleaned and the relevant rows will be stored in a file. 
 3. The final csv file with the clean data will be sent as an attachment via email.
 
+### Uni Rankings
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the QS, THE and Shanghai Rankings data, 
+as well as, combines the three scripts and calculates an overall combined score data.
+2. The overall combined score data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>. 
+
+### US BLS
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that pulls the US BLS data.
+2. The US BLS data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### BG
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that pulls the BG data.
+2. The BG data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### CB Insights
+1. A Workato recipe will be triggered on a schedule via a Workato recipe function call. 
+This recipe will trigger an AWS Lambda function that will run a Selenium script that scrapes the company data from CB Insights.
+2. The CB Insights data gets uploaded onto AWS S3.
+3. Another Workato recipe gets triggered when the new file gets uploaded onto S3. It will be automatically sent as an attachment to your email<sup>5</sup>.
+
+### OECD
+1. A Workato recipe will be triggered on a schedule. This recipe will trigger a Python API call that will extract the OECD data.
+2. The OECD data will be cleaned.
+3. The final csv file with the clean data will be sent as an attachment via email.
+
+### MPS (KIV)
+1. Manual copy & paste of the 'EmpVacDmd' cells into the 'MPS Template' Excel workbook<sup>2</sup>. 
+2. Excel will automatically map the job roles to SSOCs. This is done using a formula<sup>3</sup> that references a sheet that contains the job role to SSOC mapping.
+3. (Planned) Excel<sup>4</sup> and do an "exploding" to deal with job roles that map to multiple SSOCs.
+4. (Planned) Move the 'MPS Template' file into some previously decided upon location, for Tableau to ultimately read in.
+
+### MPS (KIV)
+IMDA Manpower Survey (MPS). It is administered by IMDA annually and collates data points like employment and vacancy numbers, and a variety of other numbers.
+ 
+We want the 'Employment' and 'Vacancy' columns from the 'EmpVacDmd' sheet in the MPS Excel workbook to be fed into Tableau. To do that, we need to
+
+1. Move the specific cells of the employment and vacancy numbers into a new sheet. Specifically, these cells should be located at cell A1, so that Tableau can digest the sheet correctly.
+2. Map each job role to its SSOC ([Singapore Standard Occupational Classification](https://www.singstat.gov.sg/standards/standards-and-classifications/ssoc)). In MPS, there are only job roles listed without SSOCs, and we need to map the job roles to its SSOC for when we eventually put this data into Tableau and can only identify the numbers by the SSOC it's matched to.
 
 ## Technical Details
+### Note for Windows Users
+If you are using a Windows Machine, you need to use the Windows Subsystem for Linux (WSL). 
 ### Deploying to AWS Lambda
 If you require Selenium, you're gonna have to create a Docker container and deploy that to Lambda.
 
