@@ -20,21 +20,22 @@ def handler(event=None, context=None):
     download_to = r'/tmp/' + file_to_download
     s3_client.download_file('psd-dashboard-data', file_to_download, download_to)
 
-    # TODO: extract all tables in pdf. extract_tables() breaking
-    # ValueError: 5 columns passed, passed data had 8 columns
+    # TODO: Append all the saved .csv files to one master file
     # Extracting .pdf table as df
     pdf = pdfplumber.open(download_to)
-    table=pdf.pages[0].extract_tables()
-    x = pd.DataFrame(table[1::],columns=table[0])
+    tables=pdf.pages[0].extract_tables()
 
-    # Saving .csv on /tmp/
-    save_as = r'/tmp/' + file_to_download[:-3] + 'csv'
-    x.to_csv(save_as)
+    for i in range(len(tables)):
+        x = pd.DataFrame(tables[i][1::],columns=tables[i][0])
 
-    # Uploading .csv to S3
-    timestamp = time.time()
-    value = datetime.datetime.fromtimestamp(timestamp)
-    human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
-    s3_client.upload_file(save_as, 'psd-dashboard-data', file_to_download[:-4] + f' {human_time}.csv')
+        # Saving .csv on /tmp/
+        save_as = r'/tmp/' + file_to_download[:-3] + str(i) + 'csv'
+        x.to_csv(save_as)
+
+        # Uploading .csv to S3
+        timestamp = time.time()
+        value = datetime.datetime.fromtimestamp(timestamp)
+        human_time = value.strftime('%Y-%m-%d ') + str((int(value.strftime('%H'))+8)%24) + value.strftime('%M')
+        s3_client.upload_file(save_as, 'psd-dashboard-data', file_to_download[:-4] + str(i) + f' {human_time}.csv')
 
 handler()
